@@ -113,7 +113,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditMode ? 'Edit Event' : 'Create Event'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<EventBloc, EventState>(
@@ -225,7 +225,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         style: const TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: const Color(0xFF1F5FA6),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
