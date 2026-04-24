@@ -21,21 +21,43 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<EventBloc, EventState>(
-        builder: (context, state) {
-          if (state is EventLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is EventDetailLoaded) {
-            return _buildDetail(context, state.event);
-          }
-          if (state is EventError) {
-            return Center(child: Text(state.message));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+    return BlocBuilder<EventBloc, EventState>(
+      builder: (context, state) {
+        if (state is EventLoading) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Event Details'),
+              backgroundColor: Colors.deepPurple,
+              foregroundColor: Colors.white,
+              leading: const BackButton(),
+            ),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (state is EventDetailLoaded) {
+          return Scaffold(body: _buildDetail(context, state.event));
+        }
+        if (state is EventError) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Event Details'),
+              backgroundColor: Colors.deepPurple,
+              foregroundColor: Colors.white,
+              leading: const BackButton(),
+            ),
+            body: Center(child: Text(state.message)),
+          );
+        }
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Event Details'),
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+            leading: const BackButton(),
+          ),
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 
