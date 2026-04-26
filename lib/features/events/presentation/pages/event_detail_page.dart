@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/event_entity.dart';
 import '../bloc/event_bloc.dart';
+import '../widgets/event_location_map_widget.dart';
 
 class EventDetailPage extends StatefulWidget {
   final String eventId;
@@ -114,6 +115,20 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   style: const TextStyle(color: Colors.black54, height: 1.5),
                 ),
                 const SizedBox(height: 24),
+                if (event.hasLocationCoordinates) ...[
+                  Text(
+                    'Event Location',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  EventLocationMapWidget(
+                    latitude: event.latitude!,
+                    longitude: event.longitude!,
+                    locationName: event.venue,
+                    height: 250,
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

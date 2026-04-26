@@ -8,6 +8,8 @@ class EventsTable {
   static const String category = 'category';
   static const String eventDate = 'event_date';
   static const String location = 'location';
+  static const String latitude = 'latitude';
+  static const String longitude = 'longitude';
   static const String imageUrl = 'image_url';
   static const String totalSeats = 'total_seats';
   static const String availableSeats = 'available_seats';
@@ -25,6 +27,8 @@ class EventsTable {
       $category TEXT NOT NULL,
       $eventDate TEXT NOT NULL,
       $location TEXT NOT NULL,
+      $latitude REAL,
+      $longitude REAL,
       $imageUrl TEXT,
       $totalSeats INTEGER NOT NULL,
       $availableSeats INTEGER NOT NULL,

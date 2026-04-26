@@ -35,11 +35,20 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    await db.execute('DROP TABLE IF EXISTS ${TicketsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${SeatsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${EventsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${UsersTable.tableName}');
-    await _onCreate(db, newVersion);
+    // Migration from version 2 to 3: Add location coordinates
+    if (oldVersion < 3) {
+      try {
+        await db.execute(
+          'ALTER TABLE ${EventsTable.tableName} ADD COLUMN ${EventsTable.latitude} REAL',
+        );
+        await db.execute(
+          'ALTER TABLE ${EventsTable.tableName} ADD COLUMN ${EventsTable.longitude} REAL',
+        );
+      } catch (e) {
+        // Columns might already exist
+        print('Migration warning: $e');
+      }
+    }
   }
 
   // Generic helpers

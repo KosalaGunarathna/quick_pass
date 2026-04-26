@@ -7,6 +7,8 @@ class EventEntity extends Equatable {
   final String category;
   final DateTime eventDate;
   final String location;
+  final double? latitude;
+  final double? longitude;
   final String? imageUrl;
   final int totalSeats;
   final int availableSeats;
@@ -22,6 +24,8 @@ class EventEntity extends Equatable {
     required this.category,
     required this.eventDate,
     required this.location,
+    this.latitude,
+    this.longitude,
     this.imageUrl,
     required this.totalSeats,
     required this.availableSeats,
@@ -36,6 +40,7 @@ class EventEntity extends Equatable {
   String get venue => location;
   double get price => ticketPrice;
   bool get hasAvailableSeats => availableSeats > 0;
+  bool get hasLocationCoordinates => latitude != null && longitude != null;
 
   @override
   List<Object?> get props => [
@@ -45,6 +50,8 @@ class EventEntity extends Equatable {
     category,
     eventDate,
     location,
+    latitude,
+    longitude,
     imageUrl,
     totalSeats,
     availableSeats,

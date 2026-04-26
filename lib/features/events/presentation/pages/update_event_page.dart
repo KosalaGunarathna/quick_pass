@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/event_entity.dart';
 import '../bloc/event_bloc.dart';
+import '../pages/location_picker_page.dart';
 
 class UpdateEventPage extends StatefulWidget {
   final EventEntity event;
@@ -27,6 +28,10 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
   late final TextEditingController _priceCtrl;
   late final TextEditingController _seatsCtrl;
   late DateTime _selectedDate;
+  late double? _latitude;
+  late double? _longitude;
+
+  bool get _hasLocationSelected => _latitude != null && _longitude != null;
 
   @override
   void initState() {
@@ -41,6 +46,8 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
       text: widget.event.totalSeats.toString(),
     );
     _selectedDate = widget.event.eventDate;
+    _latitude = widget.event.latitude;
+    _longitude = widget.event.longitude;
   }
 
   @override
@@ -92,6 +99,8 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
       category: widget.event.category,
       eventDate: _selectedDate,
       location: _venueCtrl.text.trim(),
+      latitude: _latitude,
+      longitude: _longitude,
       imageUrl: widget.event.imageUrl,
       totalSeats: seats,
       availableSeats: widget.event.availableSeats > seats
@@ -104,6 +113,27 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
     );
 
     context.read<EventBloc>().add(EventUpdate(updatedEvent));
+  }
+
+  Future<void> _pickLocation() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          initialLatitude: _latitude,
+          initialLongitude: _longitude,
+          initialLocationName: _venueCtrl.text,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _latitude = result['latitude'];
+        _longitude = result['longitude'];
+        _venueCtrl.text = result['locationName'];
+      });
+    }
   }
 
   @override
@@ -162,6 +192,43 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
                     Icons.location_on,
                     validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _pickLocation,
+                    icon: const Icon(Icons.map),
+                    label: Text(
+                      _hasLocationSelected
+                          ? 'Change Location'
+                          : 'Select Location on Map',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(
+                        color: _hasLocationSelected
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  if (_hasLocationSelected)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green[300]!),
+                        ),
+                        child: Text(
+                          'Location selected ✓ (${_latitude?.toStringAsFixed(4)}, ${_longitude?.toStringAsFixed(4)})',
+                          style: TextStyle(
+                            color: Colors.green[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
