@@ -123,7 +123,7 @@ class _ProfileTabState extends State<ProfileTab> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profile,'),
-            backgroundColor: Color(0xFF673AB7),
+            backgroundColor: Color(0xFF1F5FA6),
             foregroundColor: Colors.white,
             actions: [
               IconButton(
@@ -139,13 +139,13 @@ class _ProfileTabState extends State<ProfileTab> {
               children: [
                 CircleAvatar(
                   radius: 48,
-                  backgroundColor: Color(0xFF673AB7),
+                  backgroundColor: Color(0xFF1F5FA6),
                   child: Text(
                     user.name[0].toUpperCase(),
                     style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF673AB7),
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -166,13 +166,13 @@ class _ProfileTabState extends State<ProfileTab> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Color(0xFF673AB7),
+                    color: Color(0xFF1F5FA6),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     user.role.toUpperCase(),
                     style: const TextStyle(
-                      color: Color(0xFF673AB7),
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),

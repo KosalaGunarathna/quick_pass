@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    const brandBlue = Color(0xFF673AB7);
+    const brandBlue = Color(0xFF1F5FA6);
     const canvas = Color(0xFFF3F5F8);
 
     return Scaffold(

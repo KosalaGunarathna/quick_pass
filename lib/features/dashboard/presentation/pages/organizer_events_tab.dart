@@ -94,7 +94,7 @@ class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF673AB7),
+                    color: const Color(0xFF1F5FA6),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.all(20),
@@ -159,7 +159,7 @@ class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
                     _buildMetricCard(
                       title: 'Revenue (MTD)',
                       value: 'LKR ${revenue.round()}',
-                      valueColor: const Color(0xFF673AB7),
+                      valueColor: const Color(0xFF1F5FA6),
                     ),
                     const SizedBox(width: 12),
                     _buildMetricCard(
@@ -183,7 +183,7 @@ class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
                         icon: const Icon(Icons.add),
                         label: const Text('Create Event'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF673AB7),
+                          backgroundColor: const Color(0xFF1F5FA6),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -394,7 +394,7 @@ class OrganizerEventCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF673AB7),
+                    color: Color(0xFF1F5FA6),
                   ),
                 ),
               ],
@@ -415,8 +415,8 @@ class OrganizerEventCard extends StatelessWidget {
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF673AB7),
-                      side: const BorderSide(color: Color(0xFF673AB7)),
+                      foregroundColor: const Color(0xFF1F5FA6),
+                      side: const BorderSide(color: Color(0xFF1F5FA6)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -475,7 +475,7 @@ class OrganizerEventCard extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF673AB7),
+                      backgroundColor: const Color(0xFF1F5FA6),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

@@ -36,7 +36,7 @@ class _MyTicketsPageState extends State<MyTicketsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Tickets'),
-        backgroundColor: Color(0xFF673AB7),
+        backgroundColor: Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<TicketBloc, TicketState>(
@@ -117,13 +117,13 @@ class TicketCard extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: ticket.isActive
-                      ? Color(0xFF673AB7)
+                      ? Color(0xFF1F5FA6)
                       : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.confirmation_number,
-                  color: ticket.isActive ? Color(0xFF673AB7) : Colors.grey,
+                  color: ticket.isActive ? Color(0xFF1F5FA6) : Colors.grey,
                   size: 28,
                 ),
               ),
@@ -232,7 +232,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Ticket'),
-        backgroundColor: Color(0xFF673AB7),
+        backgroundColor: Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
         leading: BackButton(
           onPressed: () {
@@ -317,7 +317,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                           size: 220,
                           eyeStyle: const QrEyeStyle(
                             eyeShape: QrEyeShape.square,
-                            color: Color(0xFF673AB7),
+                            color: Color(0xFF1F5FA6),
                           ),
                           dataModuleStyle: const QrDataModuleStyle(
                             dataModuleShape: QrDataModuleShape.square,

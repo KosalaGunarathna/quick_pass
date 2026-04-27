@@ -18,7 +18,7 @@ class QrResultPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ticket Result'),
-        backgroundColor: const Color(0xFF673AB7),
+        backgroundColor: const Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
         leading: BackButton(onPressed: () => context.pop()),
       ),
@@ -95,7 +95,7 @@ class QrResultPage extends StatelessWidget {
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF673AB7),
+        color: Color(0xFF1F5FA6),
       ),
     );
   }
@@ -211,7 +211,7 @@ class QrResultPage extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF673AB7),
+                    color: const Color(0xFF1F5FA6),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: const Center(
@@ -305,7 +305,7 @@ class QrResultPage extends StatelessWidget {
             icon: const Icon(Icons.camera_alt),
             label: const Text('Scan Again'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF673AB7),
+              backgroundColor: const Color(0xFF1F5FA6),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),

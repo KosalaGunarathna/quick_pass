@@ -14,7 +14,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
   @override
   Widget build(BuildContext context) {
     const canvas = Color(0xFFF3F5F8);
-    const brandBlue = Color(0xFF673AB7);
+    const brandBlue = Color(0xFF1F5FA6);
 
     return Scaffold(
       backgroundColor: canvas,
@@ -171,7 +171,7 @@ class _TypeCard extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF673AB7)
+                    ? const Color(0xFF1F5FA6)
                     : const Color(0xFF141414),
               ),
             ),

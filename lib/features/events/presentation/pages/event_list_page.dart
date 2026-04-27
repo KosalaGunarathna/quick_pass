@@ -32,11 +32,14 @@ class _EventListPageState extends State<EventListPage> {
   List<EventEntity> _applyFilters(List<EventEntity> events) {
     final search = _searchTerm.trim().toLowerCase();
     if (search.isEmpty) return events;
-    return events.where((e) =>
-      e.title.toLowerCase().contains(search) ||
-      e.description.toLowerCase().contains(search) ||
-      e.location.toLowerCase().contains(search),
-    ).toList();
+    return events
+        .where(
+          (e) =>
+              e.title.toLowerCase().contains(search) ||
+              e.description.toLowerCase().contains(search) ||
+              e.location.toLowerCase().contains(search),
+        )
+        .toList();
   }
 
   String _userName(BuildContext context) {
@@ -111,7 +114,7 @@ class _EventListPageState extends State<EventListPage> {
                       ),
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: const Color(0xFF673AB7),
+                        backgroundColor: const Color(0xFF1F5FA6),
                         child: Text(
                           _userInitials(context),
                           style: const TextStyle(
@@ -187,8 +190,10 @@ class _EventListPageState extends State<EventListPage> {
       return const SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
-          child: Text('No matching events found',
-              style: TextStyle(color: Colors.grey)),
+          child: Text(
+            'No matching events found',
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
       );
     }
@@ -210,8 +215,9 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatted =
-        DateFormat('MMM dd, yyyy • hh:mm a').format(event.eventDate);
+    final formatted = DateFormat(
+      'MMM dd, yyyy • hh:mm a',
+    ).format(event.eventDate);
 
     return Card(
       margin: EdgeInsets.zero,
@@ -247,19 +253,21 @@ class EventCard extends StatelessWidget {
                     Text(
                       event.title,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    Text(formatted,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 13)),
+                    Text(
+                      formatted,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       event.location,
-                      style:
-                          const TextStyle(color: Colors.grey, fontSize: 13),
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -274,7 +282,7 @@ class EventCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF673AB7),
+                            color: Color(0xFF1F5FA6),
                           ),
                         ),
                         _seatsBadge(),
@@ -291,32 +299,31 @@ class EventCard extends StatelessWidget {
   }
 
   Widget _thumbnail() => Container(
-        width: 88,
-        height: 88,
-        color: const Color(0xFFE8EAF6),
-        child: const Icon(Icons.event, color: Color(0xFF3F51B5), size: 32),
-      );
+    width: 88,
+    height: 88,
+    color: const Color(0xFFE8EAF6),
+    child: const Icon(Icons.event, color: Color(0xFF3F51B5), size: 32),
+  );
 
   Widget _seatsBadge() => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: event.hasAvailableSeats
-              ? const Color(0xFFE8F5E9)
-              : const Color(0xFFFFEBEE),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          event.hasAvailableSeats
-              ? '${event.availableSeats} seats available'
-              : 'Sold out',
-          style: TextStyle(
-            color: event.hasAvailableSeats
-                ? const Color(0xFF2E7D32)
-                : const Color(0xFFC62828),
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: event.hasAvailableSeats
+          ? const Color(0xFFE8F5E9)
+          : const Color(0xFFFFEBEE),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Text(
+      event.hasAvailableSeats
+          ? '${event.availableSeats} seats available'
+          : 'Sold out',
+      style: TextStyle(
+        color: event.hasAvailableSeats
+            ? const Color(0xFF2E7D32)
+            : const Color(0xFFC62828),
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
 }

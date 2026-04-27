@@ -47,7 +47,7 @@ class _BookingPageState extends State<BookingPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Seat'),
-        backgroundColor: Color(0xFF673AB7),
+        backgroundColor: Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<TicketBloc, TicketState>(
@@ -71,7 +71,7 @@ class _BookingPageState extends State<BookingPage> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: Color(0xFF673AB7),
+                  color: Color(0xFF1F5FA6),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Center(
@@ -93,7 +93,7 @@ class _BookingPageState extends State<BookingPage> {
                   children: [
                     _legendDot(Colors.green.shade100, 'Available'),
                     const SizedBox(width: 16),
-                    _legendDot(Color(0xFF673AB7), 'Selected'),
+                    _legendDot(Color(0xFF1F5FA6), 'Selected'),
                     const SizedBox(width: 16),
                     _legendDot(Colors.grey.shade300, 'Booked'),
                   ],
@@ -179,12 +179,12 @@ class _BookingPageState extends State<BookingPage> {
                                         color: isBooked
                                             ? Colors.grey.shade300
                                             : isSelected
-                                            ? Color(0xFF673AB7)
+                                            ? Color(0xFF1F5FA6)
                                             : Colors.green.shade100,
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                           color: isSelected
-                                              ? Color(0xFF673AB7)
+                                              ? Color(0xFF1F5FA6)
                                               : Colors.grey.shade300,
                                         ),
                                       ),
@@ -236,7 +236,7 @@ class _BookingPageState extends State<BookingPage> {
                             : 'No seat selected',
                         style: TextStyle(
                           color: _selectedSeatLabel != null
-                              ? Color(0xFF673AB7)
+                              ? Color(0xFF1F5FA6)
                               : Colors.grey,
                         ),
                       ),
@@ -249,7 +249,7 @@ class _BookingPageState extends State<BookingPage> {
                             ? _confirmBooking
                             : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF673AB7),
+                          backgroundColor: Color(0xFF1F5FA6),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

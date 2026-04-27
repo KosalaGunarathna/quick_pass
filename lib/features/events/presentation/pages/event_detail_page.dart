@@ -28,7 +28,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Event Details'),
-              backgroundColor: Color(0xFF673AB7),
+              backgroundColor: Color(0xFF1F5FA6),
               foregroundColor: Colors.white,
               leading: const BackButton(),
             ),
@@ -42,7 +42,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Event Details'),
-              backgroundColor: Color(0xFF673AB7),
+              backgroundColor: Color(0xFF1F5FA6),
               foregroundColor: Colors.white,
               leading: const BackButton(),
             ),
@@ -52,7 +52,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Event Details'),
-            backgroundColor: Color(0xFF673AB7),
+            backgroundColor: Color(0xFF1F5FA6),
             foregroundColor: Colors.white,
             leading: const BackButton(),
           ),
@@ -73,7 +73,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         SliverAppBar(
           expandedHeight: 20,
           pinned: true,
-          backgroundColor: Color(0xFF673AB7),
+          backgroundColor: Color(0xFF1F5FA6),
           foregroundColor: Colors.white,
           leading: BackButton(onPressed: () => context.pop()),
           flexibleSpace: FlexibleSpaceBar(
@@ -88,9 +88,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     event.imageUrl!,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        Container(color: Color(0xFF673AB7)),
+                        Container(color: Color(0xFF1F5FA6)),
                   )
-                : Container(color: Color(0xFF673AB7)),
+                : Container(color: Color(0xFF1F5FA6)),
           ),
         ),
         SliverToBoxAdapter(
@@ -142,7 +142,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF673AB7),
+                      backgroundColor: Color(0xFF1F5FA6),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -168,7 +168,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
   Widget _infoRow(IconData icon, String text) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Icon(icon, size: 18, color: Color(0xFF673AB7)),
+      Icon(icon, size: 18, color: Color(0xFF1F5FA6)),
       const SizedBox(width: 8),
       Expanded(
         child: Text(

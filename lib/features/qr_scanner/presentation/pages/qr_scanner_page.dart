@@ -58,7 +58,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('QR Scanner'),
-          backgroundColor: const Color(0xFF673AB7),
+          backgroundColor: const Color(0xFF1F5FA6),
           foregroundColor: Colors.white,
           leading: BackButton(
             onPressed: () async {
@@ -109,7 +109,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
                 key: _qrKey,
                 onQRViewCreated: _onQrViewCreated,
                 overlay: QrScannerOverlayShape(
-                  borderColor: const Color(0xFF673AB7),
+                  borderColor: const Color(0xFF1F5FA6),
                   borderRadius: 10,
                   borderLength: 30,
                   borderWidth: 10,
