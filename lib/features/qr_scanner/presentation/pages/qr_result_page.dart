@@ -246,15 +246,18 @@ class QrResultPage extends StatelessWidget {
   }
 
   Widget _buildTicketInfo() {
+    // Parse seat ID to get readable format (e.g., "A2" from "row_A_seat_2")
+    final seatDisplay = _parseSeatId(ticket.seatId);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('Ticket ID', ticket.id),
+            _buildInfoRow('Ticket ID', ticket.id.substring(0, 16)),
             const SizedBox(height: 12),
-            _buildInfoRow('Seat', ticket.seatId),
+            _buildInfoRow('Seat', seatDisplay),
             const SizedBox(height: 12),
             _buildInfoRow('Status', ticket.status.toUpperCase()),
             const SizedBox(height: 12),
@@ -313,6 +316,30 @@ class QrResultPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _parseSeatId(String seatId) {
+    // Parse seat ID format (e.g., "row_A_seat_2" -> "A2")
+    try {
+      final parts = seatId.split('_');
+      // Extract row label and seat number
+      String row = '';
+      String seat = '';
+
+      for (int i = 0; i < parts.length; i++) {
+        if (parts[i].isNotEmpty) {
+          if (row.isEmpty && parts[i].length == 1) {
+            row = parts[i];
+          } else if (seat.isEmpty && int.tryParse(parts[i]) != null) {
+            seat = parts[i];
+          }
+        }
+      }
+
+      return row.isNotEmpty && seat.isNotEmpty ? '$row$seat' : seatId;
+    } catch (_) {
+      return seatId;
+    }
   }
 
   String _formatDate(DateTime date) {
