@@ -141,7 +141,7 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Event'),
-        backgroundColor: const Color(0xFF1F5FA6),
+        backgroundColor: const Color(0xFF673AB7),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<EventBloc, EventState>(
@@ -282,7 +282,7 @@ class _UpdateEventPageState extends State<UpdateEventPage> {
                         style: TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1F5FA6),
+                        backgroundColor: const Color(0xFF673AB7),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(

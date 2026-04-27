@@ -44,7 +44,7 @@ class _OrganizerEventViewPageState extends State<OrganizerEventViewPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color(0xFF673AB7),
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -82,7 +82,7 @@ class _OrganizerEventViewPageState extends State<OrganizerEventViewPage> {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       height: 210,
-                      color: Colors.deepPurple.shade100,
+                      color: Color(0xFF673AB7),
                       alignment: Alignment.center,
                       child: const Icon(Icons.image, size: 48),
                     ),
@@ -176,7 +176,7 @@ class _OrganizerEventViewPageState extends State<OrganizerEventViewPage> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Icon(Icons.event_seat, color: Colors.deepPurple),
+                  const Icon(Icons.event_seat, color: Color(0xFF673AB7)),
                   const SizedBox(width: 8),
                   Text(
                     'Seat Status (Organizer View)',
@@ -251,7 +251,7 @@ class _OrganizerEventViewPageState extends State<OrganizerEventViewPage> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.deepPurple),
+          Icon(icon, size: 18, color: Color(0xFF673AB7)),
           const SizedBox(width: 8),
           Expanded(child: Text(value)),
         ],

@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    const brandBlue = Color(0xFF1F5FA6);
+    const brandBlue = Color(0xFF673AB7);
     const canvas = Color(0xFFF3F5F8);
 
     return Scaffold(
@@ -74,18 +74,29 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const CircleAvatar(
-                            radius: 16,
-                            backgroundColor: brandBlue,
-                            child: Text(
-                              'EH',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                              ),
+                          const Text(
+                            'QuickPass',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: brandBlue,
                             ),
                           ),
+                          Image.asset('assets/icons/app_icon.png',width: 50, height: 50),
+                          // const CircleAvatar(
+                          //   radius: 16,
+                          // backgroundColor: brandBlue,
+                          // child: Text(
+                          //   'EH',
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 10,
+                          //     fontWeight: FontWeight.w700,
+                          //   ),
+                          // ),
+
+                          // ),
                           const SizedBox(height: 12),
                           const Text(
                             'Welcome back',

@@ -60,7 +60,9 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
   }
 
   Future<void> _searchLocation(String query) async {
-    if (query.isEmpty) {
+    final trimmedQuery = query.trim();
+
+    if (trimmedQuery.isEmpty) {
       setState(() {
         _searchResults = [];
         _showSearchResults = false;
@@ -71,28 +73,39 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
     setState(() => _isSearching = true);
 
     try {
-      final url = Uri.parse(
-        '${MapTilerConfig.searchUrl}?query=$query&key=${MapTilerConfig.apiKey}&limit=8',
+      final url = Uri.https(
+        'api.maptiler.com',
+        '/geocoding/${Uri.encodeComponent(trimmedQuery)}.json',
+        {'key': MapTilerConfig.apiKey, 'limit': '8'},
       );
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final results = (data['features'] as List).map((feature) {
-          final properties = feature['properties'];
-          final geometry = feature['geometry'];
-          return SearchResult(
-            name: properties['name'] ?? 'Unknown',
-            address: properties['formatted'] ?? '',
-            latitude: geometry['coordinates'][1],
-            longitude: geometry['coordinates'][0],
-          );
-        }).toList();
+        final features = data['features'];
+        final results = features is List
+            ? features.map((feature) {
+                final geometry = feature['geometry'] ?? {};
+                final coordinates = geometry['coordinates'] as List? ?? [];
+
+                return SearchResult(
+                  name: feature['text'] ?? 'Unknown',
+                  address:
+                      feature['place_name'] ?? feature['place_name_en'] ?? '',
+                  latitude: (coordinates.length > 1 ? coordinates[1] : 0)
+                      .toDouble(),
+                  longitude: (coordinates.isNotEmpty ? coordinates[0] : 0)
+                      .toDouble(),
+                );
+              }).toList()
+            : <SearchResult>[];
 
         setState(() {
           _searchResults = results;
           _showSearchResults = true;
         });
+      } else {
+        throw Exception('HTTP ${response.statusCode}');
       }
     } catch (e) {
       ScaffoldMessenger.of(

@@ -58,7 +58,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('QR Scanner'),
-          backgroundColor: const Color(0xFF1F5FA6),
+          backgroundColor: const Color(0xFF673AB7),
           foregroundColor: Colors.white,
           leading: BackButton(
             onPressed: () async {
@@ -70,25 +70,20 @@ class _QrScannerPageState extends State<QrScannerPage> {
         body: BlocListener<TicketBloc, TicketState>(
           listener: (context, state) async {
             if (state is TicketValidated) {
-              if (state.isValid && state.ticket != null) {
-                context.read<TicketBloc>().add(
-                  TicketMarkUsed(state.ticket!.id),
-                );
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ticket validated successfully'),
-                      backgroundColor: Colors.green,
-                    ),
+              await _stopScanner();
+              if (mounted) {
+                if (state.isValid && state.ticket != null) {
+                  context.read<TicketBloc>().add(
+                    TicketMarkUsed(state.ticket!.id),
                   );
-                }
-              } else {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Invalid or already used ticket'),
-                      backgroundColor: Colors.red,
-                    ),
+                  context.push(
+                    '/scan-result',
+                    extra: {'ticket': state.ticket!, 'isValid': true},
+                  );
+                } else {
+                  context.push(
+                    '/scan-result',
+                    extra: {'ticket': state.ticket, 'isValid': false},
                   );
                 }
               }
@@ -96,6 +91,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
             }
 
             if (state is TicketError) {
+              await _stopScanner();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -113,7 +109,7 @@ class _QrScannerPageState extends State<QrScannerPage> {
                 key: _qrKey,
                 onQRViewCreated: _onQrViewCreated,
                 overlay: QrScannerOverlayShape(
-                  borderColor: const Color(0xFF1F5FA6),
+                  borderColor: const Color(0xFF673AB7),
                   borderRadius: 10,
                   borderLength: 30,
                   borderWidth: 10,

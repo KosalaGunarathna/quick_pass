@@ -61,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     const canvas = Color(0xFFF3F5F8);
-    const brandBlue = Color(0xFF1F5FA6);
+    const brandBlue = Color(0xFF673AB7);
 
     return Scaffold(
       backgroundColor: canvas,
@@ -267,7 +267,7 @@ class _TypeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = isSelected
-        ? const Color(0xFF2D6CB5)
+        ? const Color(0xFF5E35B1)
         : const Color(0xFFD8D8D8);
     final backgroundColor = isSelected ? const Color(0xFFF4F8FD) : Colors.white;
 
@@ -289,7 +289,7 @@ class _TypeCard extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF1F5FA6)
+                    ? const Color(0xFF673AB7)
                     : const Color(0xFF141414),
               ),
             ),

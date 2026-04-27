@@ -2,80 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../events/domain/entities/event_entity.dart';
 import '../../../events/presentation/bloc/event_bloc.dart';
 
-// ── Organizer Dashboard ─────────────────────────────────────────────────────
-class OrganizerDashboardPage extends StatefulWidget {
-  const OrganizerDashboardPage({super.key});
-  @override
-  State<OrganizerDashboardPage> createState() => _OrganizerDashboardPageState();
-}
-
-class _OrganizerDashboardPageState extends State<OrganizerDashboardPage> {
-  int _index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    final auth = context.read<AuthBloc>().state;
-    if (auth is AuthAuthenticated) {
-      context.read<EventBloc>().add(EventLoadByOrganizer(auth.user.id));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, authState) {
-        if (authState is! AuthAuthenticated) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final pages = [
-          _OrganizerEventsTab(organizerId: authState.user.id),
-          const QrScanTab(),
-          const ProfileTab(),
-        ];
-
-        return Scaffold(
-          body: IndexedStack(index: _index, children: pages),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _index,
-            onDestinationSelected: (i) => setState(() => _index = i),
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.dashboard),
-                label: 'Dashboard',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.qr_code_scanner),
-                label: 'Scanner',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings),
-                label: 'Settings',
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _OrganizerEventsTab extends StatefulWidget {
+class OrganizerEventsTab extends StatefulWidget {
   final String organizerId;
-  const _OrganizerEventsTab({required this.organizerId});
+
+  const OrganizerEventsTab({required this.organizerId, super.key});
 
   @override
-  State<_OrganizerEventsTab> createState() => _OrganizerEventsTabState();
+  State<OrganizerEventsTab> createState() => _OrganizerEventsTabState();
 }
 
-class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
+class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
   List<EventEntity> _cachedEvents = [];
 
   @override
@@ -153,7 +94,7 @@ class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1F5FA6),
+                    color: const Color(0xFF673AB7),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.all(20),
@@ -218,7 +159,7 @@ class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
                     _buildMetricCard(
                       title: 'Revenue (MTD)',
                       value: 'LKR ${revenue.round()}',
-                      valueColor: const Color(0xFF1F5FA6),
+                      valueColor: const Color(0xFF673AB7),
                     ),
                     const SizedBox(width: 12),
                     _buildMetricCard(
@@ -242,7 +183,7 @@ class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
                         icon: const Icon(Icons.add),
                         label: const Text('Create Event'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1F5FA6),
+                          backgroundColor: const Color(0xFF673AB7),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -291,7 +232,7 @@ class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
           delegate: SliverChildBuilderDelegate((context, index) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: _OrganizerEventCard(
+              child: OrganizerEventCard(
                 event: events[index],
                 organizerId: widget.organizerId,
               ),
@@ -345,11 +286,15 @@ class _OrganizerEventsTabState extends State<_OrganizerEventsTab> {
   }
 }
 
-class _OrganizerEventCard extends StatelessWidget {
+class OrganizerEventCard extends StatelessWidget {
   final EventEntity event;
   final String organizerId;
 
-  const _OrganizerEventCard({required this.event, required this.organizerId});
+  const OrganizerEventCard({
+    required this.event,
+    required this.organizerId,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -449,7 +394,7 @@ class _OrganizerEventCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F5FA6),
+                    color: Color(0xFF673AB7),
                   ),
                 ),
               ],
@@ -470,8 +415,8 @@ class _OrganizerEventCard extends StatelessWidget {
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF1F5FA6),
-                      side: const BorderSide(color: Color(0xFF1F5FA6)),
+                      foregroundColor: const Color(0xFF673AB7),
+                      side: const BorderSide(color: Color(0xFF673AB7)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -530,7 +475,7 @@ class _OrganizerEventCard extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1F5FA6),
+                      backgroundColor: const Color(0xFF673AB7),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -545,260 +490,6 @@ class _OrganizerEventCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class QrScanTab extends StatelessWidget {
-  const QrScanTab({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Validate Tickets'),
-        backgroundColor: const Color(0xFF1F5FA6),
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.qr_code_scanner,
-              size: 80,
-              color: const Color(0xFF1F5FA6),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Scan attendee tickets',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/scan'),
-              icon: const Icon(Icons.camera_alt),
-              label: const Text('Open Scanner'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1F5FA6),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Shared Profile Tab ──────────────────────────────────────────────────────
-class ProfileTab extends StatefulWidget {
-  const ProfileTab({super.key});
-
-  @override
-  State<ProfileTab> createState() => _ProfileTabState();
-}
-
-class _ProfileTabState extends State<ProfileTab> {
-  bool _updateSubmitted = false;
-
-  Future<void> _showUpdateProfileDialog() async {
-    final auth = context.read<AuthBloc>().state;
-    if (auth is! AuthAuthenticated) return;
-
-    final nameCtrl = TextEditingController(text: auth.user.name);
-    final emailCtrl = TextEditingController(text: auth.user.email);
-    final passwordCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Update Profile'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Name is required' : null,
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: emailCtrl,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) {
-                  final value = v?.trim() ?? '';
-                  if (value.isEmpty) return 'Email is required';
-                  if (!value.contains('@')) return 'Enter valid email';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: passwordCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'New Password (optional)',
-                ),
-                obscureText: true,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (!(formKey.currentState?.validate() ?? false)) return;
-              Navigator.pop(dialogContext, true);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    setState(() {
-      _updateSubmitted = true;
-    });
-    context.read<AuthBloc>().add(
-      AuthProfileUpdateRequested(
-        userId: auth.user.id,
-        name: nameCtrl.text.trim(),
-        email: emailCtrl.text.trim(),
-        password: passwordCtrl.text.trim().isEmpty
-            ? null
-            : passwordCtrl.text.trim(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (_updateSubmitted && state is AuthAuthenticated) {
-          _updateSubmitted = false;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile updated successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-        if (_updateSubmitted && state is AuthError) {
-          _updateSubmitted = false;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is! AuthAuthenticated) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final user = state.user;
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Profile'),
-            backgroundColor: Colors.deepPurple,
-            foregroundColor: Colors.white,
-            actions: [
-              IconButton(
-                onPressed: _showUpdateProfileDialog,
-                icon: const Icon(Icons.edit),
-                tooltip: 'Update Profile',
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: Colors.deepPurple.shade100,
-                  child: Text(
-                    user.name[0].toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(user.email, style: const TextStyle(color: Colors.grey)),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.shade50,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    user.role.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.deepPurple,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Notifications'),
-                  onTap: () => context.push('/notifications'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Update Profile'),
-                  onTap: _showUpdateProfileDialog,
-                ),
-                ListTile(
-                  leading: const Icon(Icons.logout, color: Colors.red),
-                  title: const Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  onTap: () {
-                    context.read<AuthBloc>().add(AuthLogoutRequested());
-                    context.go('/login');
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
