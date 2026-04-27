@@ -44,7 +44,7 @@ class QrResultPage extends StatelessWidget {
 
               // Ticket Information
               _buildSectionTitle('Ticket Information'),
-              _buildTicketInfo(),
+              _buildTicketInfo(context),
               const SizedBox(height: 32),
 
               // Action Buttons
@@ -198,44 +198,68 @@ class QrResultPage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         String attendeeName = 'Attendee';
+        String attendeeEmail = 'N/A';
         if (state is AuthAuthenticated) {
           attendeeName = state.user.name;
+          attendeeEmail = state.user.email;
         }
 
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1F5FA6),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1F5FA6),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Name',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                          Text(
+                            attendeeName,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Name',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Email',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    Text(
+                      attendeeEmail,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        attendeeName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -245,29 +269,42 @@ class QrResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTicketInfo() {
-    // Parse seat ID to get readable format (e.g., "A2" from "row_A_seat_2")
-    final seatDisplay = _parseSeatId(ticket.seatId);
+  Widget _buildTicketInfo(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        String userEmail = 'N/A';
+        if (authState is AuthAuthenticated) {
+          userEmail = authState.user.email;
+        }
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoRow('Ticket ID', ticket.id.substring(0, 16)),
-            const SizedBox(height: 12),
-            _buildInfoRow('Seat', seatDisplay),
-            const SizedBox(height: 12),
-            _buildInfoRow('Status', ticket.status.toUpperCase()),
-            const SizedBox(height: 12),
-            _buildInfoRow(
-              'Booked At',
-              _formatDate(DateTime.parse(ticket.bookedAt)),
+        // Build seat display from seat_number and raw_label
+        final seatDisplay = ticket.rawLabel != null && ticket.seatNumber != null
+            ? '${ticket.rawLabel}${ticket.seatNumber}'
+            : 'N/A';
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('Ticket ID', ticket.id.substring(0, 16)),
+                const SizedBox(height: 12),
+                _buildInfoRow('Seat', seatDisplay),
+                const SizedBox(height: 12),
+                _buildInfoRow('Email', userEmail),
+                const SizedBox(height: 12),
+                _buildInfoRow('Status', ticket.status.toUpperCase()),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                  'Booked At',
+                  _formatDate(DateTime.parse(ticket.bookedAt)),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -316,30 +353,6 @@ class QrResultPage extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _parseSeatId(String seatId) {
-    // Parse seat ID format (e.g., "row_A_seat_2" -> "A2")
-    try {
-      final parts = seatId.split('_');
-      // Extract row label and seat number
-      String row = '';
-      String seat = '';
-
-      for (int i = 0; i < parts.length; i++) {
-        if (parts[i].isNotEmpty) {
-          if (row.isEmpty && parts[i].length == 1) {
-            row = parts[i];
-          } else if (seat.isEmpty && int.tryParse(parts[i]) != null) {
-            seat = parts[i];
-          }
-        }
-      }
-
-      return row.isNotEmpty && seat.isNotEmpty ? '$row$seat' : seatId;
-    } catch (_) {
-      return seatId;
-    }
   }
 
   String _formatDate(DateTime date) {

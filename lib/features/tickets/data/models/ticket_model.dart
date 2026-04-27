@@ -18,6 +18,8 @@ class TicketModel extends TicketEntity {
     required super.qrData,
     required super.status,
     required super.bookedAt,
+    super.seatNumber,
+    super.rawLabel,
   });
 
   factory TicketModel.fromMap(Map<String, dynamic> m) => TicketModel(
@@ -28,6 +30,8 @@ class TicketModel extends TicketEntity {
     qrData: m[TicketsTable.qrData],
     status: m[TicketsTable.status],
     bookedAt: m[TicketsTable.bookedAt],
+    seatNumber: m['seat_number'],
+    rawLabel: m['seat_row_label'],
   );
 
   Map<String, dynamic> toMap() => {
