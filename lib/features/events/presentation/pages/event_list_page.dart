@@ -43,9 +43,9 @@ class _EventListPageState extends State<EventListPage> {
   }
 
   String _userName(BuildContext context) {
-    final state = context.read<AuthBloc>().state;
-    return state is AuthAuthenticated ? state.user.name : 'Guest';
-  }
+  final state = context.watch<AuthBloc>().state;
+  return state is AuthAuthenticated ? state.user.name : 'Guest';
+}
 
   String _userInitials(BuildContext context) {
     final state = context.read<AuthBloc>().state;
@@ -106,7 +106,8 @@ class _EventListPageState extends State<EventListPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _userName(context),
+                        'Hello, ${_userName(context)}',
+            
                         style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -278,7 +279,7 @@ class EventCard extends StatelessWidget {
                         Text(
                           event.ticketPrice == 0
                               ? 'Free'
-                              : 'LKR ${event.ticketPrice.toStringAsFixed(0)}',
+                              : '\$${event.ticketPrice.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,

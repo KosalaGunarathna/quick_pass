@@ -79,7 +79,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               event.title,
-              style: const TextStyle(fontSize: 14, color: Colors.white),
+              style: const TextStyle(fontSize: 20, color: Colors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
