@@ -4,6 +4,7 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final String email;
+  final String? contactNumber;
   final String role; // 'organizer' or 'user'
   final String createdAt;
 
@@ -11,6 +12,7 @@ class UserEntity extends Equatable {
     required this.id,
     required this.name,
     required this.email,
+    this.contactNumber,
     required this.role,
     required this.createdAt,
   });
@@ -18,5 +20,5 @@ class UserEntity extends Equatable {
   bool get isOrganizer => role == 'organizer';
 
   @override
-  List<Object?> get props => [id, email, role];
+  List<Object?> get props => [id, name, email, contactNumber, role, createdAt];
 }

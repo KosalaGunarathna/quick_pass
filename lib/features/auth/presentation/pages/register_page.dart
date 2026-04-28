@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../bloc/auth_bloc.dart';
 
+const brandBlue = Color(0xFF1F5FA6);
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key, this.initialRole = 'user'});
 
@@ -17,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _registerKey = GlobalKey<FormState>();
   final _fullNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _contactNumberCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _obscure = true;
   bool _acceptTerms = false;
@@ -32,6 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void dispose() {
     _fullNameCtrl.dispose();
     _emailCtrl.dispose();
+    _contactNumberCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
   }
@@ -51,6 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
         AuthRegisterRequested(
           name: _fullNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
+          contactNumber: _contactNumberCtrl.text.trim().isEmpty
+              ? null
+              : _contactNumberCtrl.text.trim(),
           password: _passCtrl.text.trim(),
           role: _accountType,
         ),
@@ -61,7 +68,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     const canvas = Color(0xFFF3F5F8);
-    const brandBlue = Color(0xFF1F5FA6);
 
     return Scaffold(
       backgroundColor: canvas,
@@ -94,39 +100,42 @@ class _RegisterPageState extends State<RegisterPage> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 20),
+              padding: const EdgeInsets.all(15),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFFD9D9D9)),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Form(
                   key: _registerKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // ── Title (matches login's 'QuickPass' style) ──
                       const Text(
                         'Create account',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF151515),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: brandBlue,
                         ),
                       ),
+
                       const SizedBox(height: 4),
+
+                      // ── Subtitle ──
                       const Text(
                         'Set up your profile details',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF76808D),
-                        ),
+                        // No explicit fontSize → inherits theme default (~14)
                       ),
+
                       const SizedBox(height: 16),
+
+                      // ── Account type cards ──
                       Row(
                         children: [
                           Expanded(
@@ -152,89 +161,113 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 14),
-                      const _FieldLabel('Full name'),
-                      const SizedBox(height: 6),
+
+                      // ── Full name ──
                       TextFormField(
                         controller: _fullNameCtrl,
-                        decoration: const InputDecoration(hintText: 'John Doe'),
+                        decoration: const InputDecoration(
+                          labelText: 'Full name',
+                          hintText: 'John Doe',
+                        ),
                         validator: (value) =>
                             value == null || value.trim().isEmpty
-                            ? 'Enter your full name'
-                            : null,
+                                ? 'Enter your full name'
+                                : null,
                       ),
-                      const SizedBox(height: 12),
-                      const _FieldLabel('Email address'),
-                      const SizedBox(height: 6),
+
+                      const SizedBox(height: 15),
+
+                      // ── Email ──
                       TextFormField(
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
+                          labelText: 'Email',
                           hintText: 'you@company.com',
                         ),
                         validator: (value) =>
                             value == null || !value.contains('@')
-                            ? 'Enter a valid email address'
-                            : null,
+                                ? 'Enter a valid email address'
+                                : null,
                       ),
-                      const SizedBox(height: 12),
-                      const _FieldLabel('Password'),
-                      const SizedBox(height: 6),
+
+                      const SizedBox(height: 15),
+
+                      // ── Contact number ──
+                      TextFormField(
+                        controller: _contactNumberCtrl,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          labelText: 'Contact number',
+                          hintText: '+1 555 123 4567',
+                        ),
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      // ── Password ──
                       TextFormField(
                         controller: _passCtrl,
                         obscureText: _obscure,
                         decoration: InputDecoration(
+                          labelText: 'Password',
                           hintText: 'Minimum 8 characters',
                           suffixIcon: IconButton(
-                            onPressed: () => setState(() {
-                              _obscure = !_obscure;
-                            }),
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
                             icon: Icon(
                               _obscure
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: const Color(0xFF8B96A5),
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
                           ),
                         ),
-                        validator: (value) => value == null || value.length < 8
-                            ? 'Minimum 8 characters'
-                            : null,
+                        validator: (value) =>
+                            value == null || value.length <= 6
+                                ? 'Minimum 6 characters'
+                                : null,
                       ),
-                      const SizedBox(height: 10),
-                      CheckboxListTile(
-                        value: _acceptTerms,
-                        onChanged: (value) => setState(() {
-                          _acceptTerms = value ?? false;
-                        }),
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        dense: true,
-                        visualDensity: VisualDensity.compact,
-                        title: const Text(
-                          'I agree to the Terms of Service and Privacy Policy',
-                          style: TextStyle(fontSize: 10),
+
+                      // ── Terms checkbox (matches login's remember-me row) ──
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _acceptTerms,
+                            onChanged: (v) =>
+                                setState(() => _acceptTerms = v ?? false),
+                          ),
+                          const Expanded(
+                            child: Text(
+                              'I agree to the Terms of Service and Privacy Policy',
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // ── Submit button (matches login's ElevatedButton) ──
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : _submitRegister,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: brandBlue,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text(
+                            isLoading ? 'Creating...' : 'Create Account',
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      _ActionButton(
-                        label: isLoading ? 'Creating...' : 'Create Account',
-                        onPressed: isLoading ? null : _submitRegister,
-                        color: brandBlue,
-                      ),
-                      const SizedBox(height: 10),
-                      Center(
-                        child: TextButton(
-                          onPressed: () => context.go('/login'),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Already have an account? Sign in',
-                            style: TextStyle(fontSize: 10),
-                          ),
+
+                      // ── Sign-in link (matches login's TextButton) ──
+                      TextButton(
+                        onPressed: () => context.go('/login'),
+                        child: const Text(
+                          'Already have an account? Sign in',
                         ),
                       ),
                     ],
@@ -248,6 +281,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+
+// ── Type card ──────────────────────────────────────────────────────────────
 
 class _TypeCard extends StatelessWidget {
   const _TypeCard({
@@ -266,101 +301,50 @@ class _TypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isSelected
-        ? const Color(0xFF2D6CB5)
-        : const Color(0xFFD8D8D8);
-    final backgroundColor = isSelected ? const Color(0xFFF4F8FD) : Colors.white;
+    final borderColor =
+        isSelected ? const Color(0xFF5E35B1) : const Color(0xFFD8D8D8);
+    final backgroundColor =
+        isSelected ? const Color(0xFFF4F8FD) : Colors.white;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: borderColor, width: isSelected ? 1.4 : 1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: borderColor,
+            width: isSelected ? 1.4 : 1,
+          ),
         ),
         child: Column(
           children: [
+            // Large letter — kept at 24 to visually match the title size
             Text(
               title,
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? const Color(0xFF1F5FA6)
-                    : const Color(0xFF141414),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? brandBlue : const Color(0xFF141414),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
+            // Subtitle — no explicit size, inherits theme default
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF141414),
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 2),
+            // Description — one step smaller but still readable (12)
             Text(
               description,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 8.5, color: Color(0xFF7B8490)),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FieldLabel extends StatelessWidget {
-  const _FieldLabel(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w600,
-        color: Color(0xFF6F7783),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.label,
-    required this.onPressed,
-    required this.color,
-  });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 11),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
         ),
       ),
     );

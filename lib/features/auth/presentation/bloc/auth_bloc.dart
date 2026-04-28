@@ -18,14 +18,16 @@ class AuthLoginRequested extends AuthEvent {
 
 class AuthRegisterRequested extends AuthEvent {
   final String name, email, password, role;
+  final String? contactNumber;
   AuthRegisterRequested({
     required this.name,
     required this.email,
     required this.password,
     required this.role,
+    this.contactNumber,
   });
   @override
-  List<Object?> get props => [name, email, password, role];
+  List<Object?> get props => [name, email, password, role, contactNumber];
 }
 
 class AuthLogoutRequested extends AuthEvent {}
@@ -37,16 +39,18 @@ class AuthProfileUpdateRequested extends AuthEvent {
   final String name;
   final String email;
   final String? password;
+  final String? contactNumber;
 
   AuthProfileUpdateRequested({
     required this.userId,
     required this.name,
     required this.email,
     this.password,
+    this.contactNumber,
   });
 
   @override
-  List<Object?> get props => [userId, name, email, password];
+  List<Object?> get props => [userId, name, email, password, contactNumber];
 }
 
 // States
@@ -132,6 +136,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: e.email,
         password: e.password,
         role: e.role,
+        contactNumber: e.contactNumber,
       );
       emit(AuthAuthenticated(user));
     } catch (ex) {
@@ -155,6 +160,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: e.name,
         email: e.email,
         password: e.password,
+        contactNumber: e.contactNumber,
       );
       emit(AuthAuthenticated(user));
     } catch (ex) {

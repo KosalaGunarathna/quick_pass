@@ -5,8 +5,7 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/events/domain/entities/event_entity.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
-import '../../features/auth/presentation/pages/role_selection_page.dart';
-import '../../features/dashboard/presentation/pages/organizer_dashboard_page.dart';
+import '../../features/dashboard/presentation/pages/organizer_home_page.dart';
 import '../../features/dashboard/presentation/pages/user_home_page.dart';
 import '../../features/events/presentation/pages/create_event_page.dart';
 import '../../features/events/presentation/pages/event_detail_page.dart';
@@ -15,6 +14,7 @@ import '../../features/events/presentation/pages/update_event_page.dart';
 import '../../features/tickets/presentation/pages/booking_page.dart';
 import '../../features/tickets/presentation/pages/my_tickets_page.dart';
 import '../../features/qr_scanner/presentation/pages/qr_scanner_page.dart';
+import '../../features/qr_scanner/presentation/pages/qr_result_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 
 GoRouter buildRouter(AuthBloc authBloc) {
@@ -25,8 +25,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
       final isLoggedIn = authState is AuthAuthenticated;
       final isAuthRoute =
           state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register' ||
-          state.matchedLocation == '/role-selection';
+          state.matchedLocation == '/register';
 
       if (!isLoggedIn && !isAuthRoute) return '/login';
       if (isLoggedIn && isAuthRoute) {
@@ -44,14 +43,10 @@ GoRouter buildRouter(AuthBloc authBloc) {
           return RegisterPage(initialRole: role);
         },
       ),
-      GoRoute(
-        path: '/role-selection',
-        builder: (_, __) => const RoleSelectionPage(),
-      ),
       GoRoute(path: '/home', builder: (_, __) => const UserHomePage()),
       GoRoute(
         path: '/organizer',
-        builder: (_, __) => const OrganizerDashboardPage(),
+        builder: (_, __) => const OrganizerHomePage(),
       ),
       GoRoute(
         path: '/event/:id',
@@ -100,6 +95,16 @@ GoRouter buildRouter(AuthBloc authBloc) {
         },
       ),
       GoRoute(path: '/scan', builder: (_, __) => const QrScannerPage()),
+      GoRoute(
+        path: '/scan-result',
+        builder: (_, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return QrResultPage(
+            ticket: extra['ticket'],
+            isValid: extra['isValid'] as bool,
+          );
+        },
+      ),
       GoRoute(
         path: '/notifications',
         builder: (_, __) => const NotificationsPage(),

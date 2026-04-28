@@ -13,7 +13,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: const BorderSide(color: Color(0xFF2D6CB5)),
+        borderSide: const BorderSide(color: Color(0xFF5E35B1)),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       isDense: true,
@@ -29,7 +29,7 @@ class AppTheme {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: const Color(0xFFDAE7F7),
+      indicatorColor: const Color(0xFFD1C4E9),
       labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12)),
     ),
   );

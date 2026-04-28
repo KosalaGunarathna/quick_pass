@@ -19,12 +19,14 @@ class RegisterUseCase {
     required String email,
     required String password,
     required String role,
+    String? contactNumber,
   }) {
     return repository.register(
       name: name,
       email: email,
       password: password,
       role: role,
+      contactNumber: contactNumber,
     );
   }
 }
@@ -45,12 +47,14 @@ class UpdateProfileUseCase {
     required String name,
     required String email,
     String? password,
+    String? contactNumber,
   }) {
     return repository.updateProfile(
       userId: userId,
       name: name,
       email: email,
       password: password,
+      contactNumber: contactNumber,
     );
   }
 }

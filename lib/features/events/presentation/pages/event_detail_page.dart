@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/event_entity.dart';
 import '../bloc/event_bloc.dart';
+import '../widgets/event_location_map_widget.dart';
 
 class EventDetailPage extends StatefulWidget {
   final String eventId;
@@ -27,7 +28,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Event Details'),
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: Color(0xFF1F5FA6),
               foregroundColor: Colors.white,
               leading: const BackButton(),
             ),
@@ -41,7 +42,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Event Details'),
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: Color(0xFF1F5FA6),
               foregroundColor: Colors.white,
               leading: const BackButton(),
             ),
@@ -51,7 +52,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Event Details'),
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: Color(0xFF1F5FA6),
             foregroundColor: Colors.white,
             leading: const BackButton(),
           ),
@@ -70,15 +71,15 @@ class _EventDetailPageState extends State<EventDetailPage> {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          expandedHeight: 220,
+          expandedHeight: 20,
           pinned: true,
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Color(0xFF1F5FA6),
           foregroundColor: Colors.white,
           leading: BackButton(onPressed: () => context.pop()),
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               event.title,
-              style: const TextStyle(fontSize: 14, color: Colors.white),
+              style: const TextStyle(fontSize: 20, color: Colors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -87,9 +88,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     event.imageUrl!,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        Container(color: Colors.deepPurple.shade700),
+                        Container(color: Color(0xFF1F5FA6)),
                   )
-                : Container(color: Colors.deepPurple.shade700),
+                : Container(color: Color(0xFF1F5FA6)),
           ),
         ),
         SliverToBoxAdapter(
@@ -114,14 +115,34 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   style: const TextStyle(color: Colors.black54, height: 1.5),
                 ),
                 const SizedBox(height: 24),
+                if (event.hasLocationCoordinates) ...[
+                  Text(
+                    'Event Location',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  EventLocationMapWidget(
+                    latitude: event.latitude!,
+                    longitude: event.longitude!,
+                    locationName: event.venue,
+                    height: 250,
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: event.hasAvailableSeats
-                        ? () => context.push('/book/${event.id}')
+                        ? () async {
+                            await context.push('/book/${event.id}');
+                            if (!context.mounted) return;
+                            context.read<EventBloc>().add(
+                              EventLoadById(widget.eventId),
+                            );
+                          }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: Color(0xFF1F5FA6),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -147,7 +168,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
   Widget _infoRow(IconData icon, String text) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Icon(icon, size: 18, color: Colors.deepPurple),
+      Icon(icon, size: 18, color: Color(0xFF1F5FA6)),
       const SizedBox(width: 8),
       Expanded(
         child: Text(

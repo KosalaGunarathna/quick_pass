@@ -6,6 +6,7 @@ class UsersTable {
   static const String password = 'password';
   static const String role = 'role';
   static const String createdAt = 'created_at';
+  static const String contactNumber = 'contact_number';
 
   static const String createSql =
       '''
@@ -15,7 +16,8 @@ class UsersTable {
       $email TEXT NOT NULL UNIQUE,
       $password TEXT NOT NULL,
       $role TEXT NOT NULL DEFAULT 'user',
-      $createdAt TEXT NOT NULL
+      $createdAt TEXT NOT NULL,
+      $contactNumber TEXT
     )
   ''';
 }

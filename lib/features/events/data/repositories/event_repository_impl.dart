@@ -5,25 +5,12 @@ import '../datasources/event_datasource.dart';
 
 class EventRepositoryImpl implements EventRepository {
   final EventLocalDatasource local;
-  final EventRemoteDatasource remote;
 
-  EventRepositoryImpl({required this.local, required this.remote});
+  EventRepositoryImpl({required this.local});
 
   @override
   Future<List<EventEntity>> getEvents() async {
-    final localEvents = await local.getEvents();
-    try {
-      final remoteEvents = await remote.getEvents();
-      final merged = <String, EventEntity>{
-        for (final event in localEvents) event.id: event,
-      };
-      for (final event in remoteEvents) {
-        merged[event.id] = event;
-      }
-      return merged.values.toList();
-    } catch (_) {
-      return localEvents;
-    }
+    return local.getEvents();
   }
 
   @override
@@ -32,11 +19,7 @@ class EventRepositoryImpl implements EventRepository {
 
   @override
   Future<EventEntity> getEventById(String id) async {
-    try {
-      return await local.getEventById(id);
-    } catch (e) {
-      return await remote.getEventById(id);
-    }
+    return local.getEventById(id);
   }
 
   @override
