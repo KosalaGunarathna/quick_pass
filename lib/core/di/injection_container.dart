@@ -5,15 +5,12 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/auth_usecases.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
-
 import '../../features/events/data/datasources/event_datasource.dart';
 import '../../features/events/data/datasources/event_local_datasource.dart';
-import '../../features/events/data/datasources/event_remote_datasource.dart';
 import '../../features/events/data/repositories/event_repository_impl.dart';
 import '../../features/events/domain/repositories/event_repository.dart';
 import '../../features/events/domain/usecases/event_usecases.dart';
 import '../../features/events/presentation/bloc/event_bloc.dart';
-
 import '../../features/tickets/data/datasources/ticket_local_datasource.dart';
 import '../../features/tickets/data/repositories/ticket_repository_impl.dart';
 import '../../features/tickets/domain/repositories/ticket_repository.dart';
@@ -57,11 +54,9 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<EventLocalDatasource>(
     () => EventLocalDatasourceImpl(db: sl()),
   );
-  sl.registerLazySingleton<EventRemoteDatasource>(
-    () => EventRemoteDatasourceImpl(),
-  );
+
   sl.registerLazySingleton<EventRepository>(
-    () => EventRepositoryImpl(local: sl(), remote: sl()),
+    () => EventRepositoryImpl(local: sl()),
   );
 
   sl.registerLazySingleton(() => GetEventsUseCase(sl()));

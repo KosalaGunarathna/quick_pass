@@ -161,9 +161,12 @@ class _OrganizerEventViewPageState extends State<OrganizerEventViewPage> {
                         if (!confirmed || !context.mounted) return;
                         context.read<EventBloc>().add(EventDelete(event.id));
                       },
-                      style: ElevatedButton.styleFrom(
+                      style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       icon: const Icon(Icons.delete),
                       label: const Text('Delete'),

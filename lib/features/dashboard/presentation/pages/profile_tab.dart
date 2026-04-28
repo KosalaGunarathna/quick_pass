@@ -138,7 +138,7 @@ class _ProfileTabState extends State<ProfileTab> {
         final user = state.user;
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Profile,'),
+            title: const Text('Profile'),
             backgroundColor: Color(0xFF1F5FA6),
             foregroundColor: Colors.white,
             actions: [

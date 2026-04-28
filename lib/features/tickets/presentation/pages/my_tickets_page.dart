@@ -117,13 +117,13 @@ class TicketCard extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: ticket.isActive
-                      ? Color(0xFF1F5FA6)
+                      ? Colors.grey.shade100
                       : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.confirmation_number,
-                  color: ticket.isActive ? Color(0xFF1F5FA6) : Colors.grey,
+                  color: ticket.isActive ? Color(0xFF1F5FA6) : const ui.Color.fromARGB(255, 147, 146, 146),
                   size: 28,
                 ),
               ),

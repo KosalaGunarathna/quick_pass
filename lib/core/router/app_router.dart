@@ -5,7 +5,6 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/events/domain/entities/event_entity.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
-import '../../features/auth/presentation/pages/role_selection_page.dart';
 import '../../features/dashboard/presentation/pages/organizer_home_page.dart';
 import '../../features/dashboard/presentation/pages/user_home_page.dart';
 import '../../features/events/presentation/pages/create_event_page.dart';
@@ -26,8 +25,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
       final isLoggedIn = authState is AuthAuthenticated;
       final isAuthRoute =
           state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register' ||
-          state.matchedLocation == '/role-selection';
+          state.matchedLocation == '/register';
 
       if (!isLoggedIn && !isAuthRoute) return '/login';
       if (isLoggedIn && isAuthRoute) {
@@ -44,10 +42,6 @@ GoRouter buildRouter(AuthBloc authBloc) {
           final role = state.uri.queryParameters['role'] ?? 'user';
           return RegisterPage(initialRole: role);
         },
-      ),
-      GoRoute(
-        path: '/role-selection',
-        builder: (_, __) => const RoleSelectionPage(),
       ),
       GoRoute(path: '/home', builder: (_, __) => const UserHomePage()),
       GoRoute(

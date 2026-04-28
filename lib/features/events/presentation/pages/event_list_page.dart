@@ -163,6 +163,7 @@ class _EventListPageState extends State<EventListPage> {
         onChanged: (value) => setState(() => _searchTerm = value),
         decoration: InputDecoration(
           hintText: 'Search events, venues, organizers...',
+          hintStyle: const TextStyle(fontSize: 14),
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
