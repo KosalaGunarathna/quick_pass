@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../tickets/domain/entities/ticket_entity.dart';
 import '../../../events/domain/entities/event_entity.dart';
 import '../../../events/presentation/bloc/event_bloc.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 class QrResultPage extends StatelessWidget {
   final TicketEntity ticket;
@@ -194,145 +193,128 @@ class QrResultPage extends StatelessWidget {
   }
 
   Widget _buildAttendeeInfo(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        String attendeeName = 'Attendee';
-        String attendeeEmail = 'N/A';
-        String attendeeContactNumber = 'N/A';
-        if (state is AuthAuthenticated) {
-          attendeeName = state.user.name;
-          attendeeEmail = state.user.email;
-          attendeeContactNumber =
-              state.user.contactNumber?.toString().isNotEmpty == true
-              ? state.user.contactNumber.toString()
-              : 'N/A';
-        }
+    // Use ticket owner details instead of current user
+    String attendeeName = ticket.userName ?? 'Attendee';
+    String attendeeEmail = ticket.userEmail ?? 'N/A';
+    String attendeeContactNumber = ticket.userContact?.isNotEmpty == true
+        ? ticket.userContact!
+        : 'N/A';
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1F5FA6),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Name',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          Text(
-                            attendeeName,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1F5FA6),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.person, color: Colors.white),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Email',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    Text(
-                      attendeeEmail,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Name',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Contact Number',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    Text(
-                      attendeeContactNumber,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        attendeeName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Email',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  attendeeEmail,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Contact Number',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  attendeeContactNumber,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildTicketInfo(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, authState) {
-        String userEmail = 'N/A';
-        String userContactNumber = 'N/A';
-        if (authState is AuthAuthenticated) {
-          userEmail = authState.user.email;
-          userContactNumber =
-              authState.user.contactNumber?.toString().isNotEmpty == true
-              ? authState.user.contactNumber.toString()
-              : 'N/A';
-        }
+    // Use ticket owner details
+    String userEmail = ticket.userEmail ?? 'N/A';
+    String userContactNumber = ticket.userContact?.isNotEmpty == true
+        ? ticket.userContact!
+        : 'N/A';
 
-        // Build seat display from seat_number and raw_label
-        final seatDisplay = ticket.rawLabel != null && ticket.seatNumber != null
-            ? '${ticket.rawLabel}${ticket.seatNumber}'
-            : 'N/A';
+    // Build seat display from seat_number and raw_label
+    final seatDisplay = ticket.rawLabel != null && ticket.seatNumber != null
+        ? '${ticket.rawLabel}${ticket.seatNumber}'
+        : 'N/A';
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildInfoRow('Ticket ID', ticket.id.substring(0, 16)),
-                const SizedBox(height: 12),
-                _buildInfoRow('Seat', seatDisplay),
-                const SizedBox(height: 12),
-                _buildInfoRow('Email', userEmail),
-                const SizedBox(height: 12),
-                _buildInfoRow('Contact Number', userContactNumber),
-                const SizedBox(height: 12),
-                _buildInfoRow('Status', ticket.status.toUpperCase()),
-                const SizedBox(height: 12),
-                _buildInfoRow(
-                  'Booked At',
-                  _formatDate(DateTime.parse(ticket.bookedAt)),
-                ),
-              ],
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoRow('Ticket ID', ticket.id.substring(0, 16)),
+            const SizedBox(height: 12),
+            _buildInfoRow('Seat', seatDisplay),
+            const SizedBox(height: 12),
+            _buildInfoRow('Email', userEmail),
+            const SizedBox(height: 12),
+            _buildInfoRow('Contact Number', userContactNumber),
+            const SizedBox(height: 12),
+            _buildInfoRow('Status', ticket.status.toUpperCase()),
+            const SizedBox(height: 12),
+            _buildInfoRow(
+              'Booked At',
+              _formatDate(DateTime.parse(ticket.bookedAt)),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 

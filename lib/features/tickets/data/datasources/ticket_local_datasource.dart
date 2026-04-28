@@ -8,7 +8,8 @@ import '../../../../shared/local_db/tables/users_table.dart';
 import '../../../notifications/data/datasources/notification_service.dart';
 import '../../domain/entities/event_booking_entity.dart';
 
-// Model
+// ── Model ──────────────────────────────────────────────────────────────────
+
 class TicketModel extends TicketEntity {
   const TicketModel({
     required super.id,
@@ -18,6 +19,11 @@ class TicketModel extends TicketEntity {
     required super.qrData,
     required super.status,
     required super.bookedAt,
+    super.seatNumber,
+    super.rawLabel,
+    super.userName,
+    super.userEmail,
+    super.userContact,
   });
 
   factory TicketModel.fromMap(Map<String, dynamic> m) => TicketModel(
@@ -28,6 +34,16 @@ class TicketModel extends TicketEntity {
     qrData: m[TicketsTable.qrData],
     status: m[TicketsTable.status],
     bookedAt: m[TicketsTable.bookedAt],
+    seatNumber: (m['seat_number'] ?? m['seatNumber'])?.toString(),
+    rawLabel: (m['seat_row_label'] ?? m['seat_row_label'] ?? m['row_label'])
+        ?.toString(),
+    userName: _firstNonEmpty(m, ['user_name', 'booked_user_name', 'name']),
+    userEmail: _firstNonEmpty(m, ['user_email', 'booked_user_email', 'email']),
+    userContact: _firstNonEmpty(m, [
+      'user_contact',
+      'booked_user_contact',
+      'contact_number',
+    ]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -41,10 +57,130 @@ class TicketModel extends TicketEntity {
   };
 }
 
-// Datasource
+String? _firstNonEmpty(Map<String, dynamic> m, List<String> keys) {
+  for (final k in keys) {
+    if (m.containsKey(k)) {
+      final v = m[k];
+      if (v != null) {
+        final s = v.toString();
+        if (s.isNotEmpty) return s;
+      }
+    }
+  }
+  return null;
+}
+
+// ── Datasource ─────────────────────────────────────────────────────────────
+
 class TicketLocalDatasource {
-  final DatabaseHelper db;
   TicketLocalDatasource({required this.db});
+
+  final DatabaseHelper db;
+
+  // Shared SELECT + JOINs for ticket queries
+  static const String _ticketSelect =
+      '''
+    SELECT
+      t.${TicketsTable.id} AS id,
+      t.${TicketsTable.eventId},
+      t.${TicketsTable.userId},
+      t.${TicketsTable.seatId},
+      t.${TicketsTable.qrData},
+      t.${TicketsTable.status},
+      t.${TicketsTable.bookedAt},
+      s.${SeatsTable.rowLabel} AS seat_row_label,
+      s.${SeatsTable.seatNumber} AS seat_number,
+      u.${UsersTable.name} AS user_name,
+      u.${UsersTable.email} AS user_email,
+      u.${UsersTable.contactNumber} AS user_contact
+    FROM ${TicketsTable.tableName} t
+    INNER JOIN ${SeatsTable.tableName} s ON s.${SeatsTable.id} = t.${TicketsTable.seatId}
+    INNER JOIN ${UsersTable.tableName} u ON u.${UsersTable.id} = t.${TicketsTable.userId}
+  ''';
+
+  Future<List<Map<String, dynamic>>> _queryTicketRows(
+    String where,
+    List<Object?> args,
+  ) async {
+    final results = await db.rawQuery('$_ticketSelect WHERE $where', args);
+    return results;
+  }
+
+  // ── Public methods ────────────────────────────────────────────────────────
+
+  Future<List<TicketModel>> getTicketsByUser(String userId) async {
+    final rows = await _queryTicketRows(
+      't.${TicketsTable.userId} = ? ORDER BY t.${TicketsTable.bookedAt} DESC',
+      [userId],
+    );
+    return rows.map((r) => TicketModel.fromMap(r)).toList();
+  }
+
+  Future<TicketModel?> getTicketById(String id) async {
+    final results = await _queryTicketRows('t.${TicketsTable.id} = ?', [id]);
+    if (results.isEmpty) return null;
+    final row = Map<String, dynamic>.from(results.first);
+    // if user fields missing or empty, try to fetch from users table directly
+    final maybeUserName = _firstNonEmpty(row, [
+      'user_name',
+      'booked_user_name',
+      'name',
+    ]);
+    if (maybeUserName == null) {
+      final userId = row[TicketsTable.userId]?.toString();
+      if (userId != null && userId.isNotEmpty) {
+        final userRows = await db.query(
+          UsersTable.tableName,
+          where: '\${UsersTable.id} = ?',
+          whereArgs: [userId],
+        );
+        if (userRows.isNotEmpty) {
+          final u = userRows.first;
+          row['user_name'] = u[UsersTable.name];
+          row['user_email'] = u[UsersTable.email];
+          row['user_contact'] = u[UsersTable.contactNumber];
+        }
+      }
+    }
+    return TicketModel.fromMap(row);
+  }
+
+  Future<TicketModel?> validateTicket(String qrData) async {
+    final results = await _queryTicketRows('t.${TicketsTable.qrData} = ?', [
+      qrData,
+    ]);
+    if (results.isEmpty) return null;
+    final row = Map<String, dynamic>.from(results.first);
+    final maybeUserName = _firstNonEmpty(row, [
+      'user_name',
+      'booked_user_name',
+      'name',
+    ]);
+    if (maybeUserName == null) {
+      final userId = row[TicketsTable.userId]?.toString();
+      if (userId != null && userId.isNotEmpty) {
+        final userRows = await db.query(
+          UsersTable.tableName,
+          where: '\${UsersTable.id} = ?',
+          whereArgs: [userId],
+        );
+        if (userRows.isNotEmpty) {
+          final u = userRows.first;
+          row['user_name'] = u[UsersTable.name];
+          row['user_email'] = u[UsersTable.email];
+          row['user_contact'] = u[UsersTable.contactNumber];
+        }
+      }
+    }
+    return TicketModel.fromMap(row);
+  }
+
+  Future<void> markTicketUsed(String ticketId) => db.update(
+    TicketsTable.tableName,
+    {TicketsTable.status: 'used'},
+    where: '${TicketsTable.id} = ?',
+    whereArgs: [ticketId],
+  );
 
   Future<List<EventBookingEntity>> getBookingsByEvent(String eventId) async {
     final rows = await db.rawQuery(
@@ -60,10 +196,8 @@ class TicketLocalDatasource {
         u.${UsersTable.name} AS booked_user_name,
         u.${UsersTable.email} AS booked_user_email
       FROM ${TicketsTable.tableName} t
-      INNER JOIN ${SeatsTable.tableName} s
-        ON s.${SeatsTable.id} = t.${TicketsTable.seatId}
-      INNER JOIN ${UsersTable.tableName} u
-        ON u.${UsersTable.id} = t.${TicketsTable.userId}
+      INNER JOIN ${SeatsTable.tableName} s ON s.${SeatsTable.id} = t.${TicketsTable.seatId}
+      INNER JOIN ${UsersTable.tableName} u ON u.${UsersTable.id} = t.${TicketsTable.userId}
       WHERE t.${TicketsTable.eventId} = ?
       ORDER BY s.${SeatsTable.rowLabel} ASC, s.${SeatsTable.seatNumber} ASC
       ''',
@@ -71,18 +205,16 @@ class TicketLocalDatasource {
     );
 
     return rows.map((row) {
-      final rowLabel = (row['seat_row_label'] ?? '').toString();
-      final seatNumber = (row['seat_number'] ?? '').toString();
-      final seatLabel = '$rowLabel$seatNumber';
+      final label = '${row['seat_row_label'] ?? ''}${row['seat_number'] ?? ''}';
       return EventBookingEntity(
-        ticketId: (row['ticket_id'] ?? '').toString(),
-        seatId: (row['seat_id'] ?? '').toString(),
-        seatLabel: seatLabel,
-        userId: (row['booked_user_id'] ?? '').toString(),
-        userName: (row['booked_user_name'] ?? 'Unknown').toString(),
-        userEmail: (row['booked_user_email'] ?? '').toString(),
-        status: (row['ticket_status'] ?? 'active').toString(),
-        bookedAt: (row['ticket_booked_at'] ?? '').toString(),
+        ticketId: '${row['ticket_id'] ?? ''}',
+        seatId: '${row['seat_id'] ?? ''}',
+        seatLabel: label,
+        userId: '${row['booked_user_id'] ?? ''}',
+        userName: '${row['booked_user_name'] ?? 'Unknown'}',
+        userEmail: '${row['booked_user_email'] ?? ''}',
+        status: '${row['ticket_status'] ?? 'active'}',
+        bookedAt: '${row['ticket_booked_at'] ?? ''}',
       );
     }).toList();
   }
@@ -93,17 +225,30 @@ class TicketLocalDatasource {
     required String seatId,
   }) async {
     final id = const Uuid().v4();
-    final qrData = 'TICKET:$id:$eventId:$seatId';
+
+    // Fetch user details
+    final userRows = await db.query(
+      UsersTable.tableName,
+      where: '${UsersTable.id} = ?',
+      whereArgs: [userId],
+    );
+    final user = userRows.isNotEmpty ? userRows.first : null;
+
     final ticket = TicketModel(
       id: id,
       eventId: eventId,
       userId: userId,
       seatId: seatId,
-      qrData: qrData,
+      qrData: 'TICKET:$id:$eventId:$seatId',
       status: 'active',
       bookedAt: DateTime.now().toIso8601String(),
+      userName: user?[UsersTable.name]?.toString(),
+      userEmail: user?[UsersTable.email]?.toString(),
+      userContact: user?[UsersTable.contactNumber]?.toString(),
     );
+
     await db.insert(TicketsTable.tableName, ticket.toMap());
+
     // Mark seat as booked
     await db.update(
       SeatsTable.tableName,
@@ -111,78 +256,34 @@ class TicketLocalDatasource {
       where: '${SeatsTable.id} = ?',
       whereArgs: [seatId],
     );
+
+    // Decrement available seats & schedule notification
     final eventRows = await db.query(
       EventsTable.tableName,
       where: '${EventsTable.id} = ?',
       whereArgs: [eventId],
     );
-    if (eventRows.isNotEmpty) {
-      final currentAvailable =
-          int.tryParse('${eventRows.first[EventsTable.availableSeats] ?? 0}') ??
-          0;
+    final event = eventRows.isNotEmpty ? eventRows.first : null;
+    if (event != null) {
+      final available =
+          int.tryParse('${event[EventsTable.availableSeats] ?? 0}') ?? 0;
       await db.update(
         EventsTable.tableName,
-        {
-          EventsTable.availableSeats: currentAvailable > 0
-              ? currentAvailable - 1
-              : 0,
-        },
+        {EventsTable.availableSeats: available > 0 ? available - 1 : 0},
         where: '${EventsTable.id} = ?',
         whereArgs: [eventId],
       );
-    }
-    if (eventRows.isNotEmpty) {
-      final event = eventRows.first;
-      final title = (event[EventsTable.title] ?? 'Event').toString();
-      final dateRaw = (event[EventsTable.eventDate] ?? '').toString();
-      final date = DateTime.tryParse(dateRaw);
+
+      final date = DateTime.tryParse('${event[EventsTable.eventDate] ?? ''}');
       if (date != null) {
         await NotificationService.instance.scheduleEventReminder(
           eventId: eventId,
-          eventTitle: title,
+          eventTitle: (event[EventsTable.title] ?? 'Event').toString(),
           eventDate: date,
         );
       }
     }
+
     return ticket;
-  }
-
-  Future<List<TicketModel>> getTicketsByUser(String userId) async {
-    final results = await db.query(
-      TicketsTable.tableName,
-      where: '${TicketsTable.userId} = ?',
-      whereArgs: [userId],
-      orderBy: '${TicketsTable.bookedAt} DESC',
-    );
-    return results.map((t) => TicketModel.fromMap(t)).toList();
-  }
-
-  Future<TicketModel?> getTicketById(String id) async {
-    final results = await db.query(
-      TicketsTable.tableName,
-      where: '${TicketsTable.id} = ?',
-      whereArgs: [id],
-    );
-    if (results.isEmpty) return null;
-    return TicketModel.fromMap(results.first);
-  }
-
-  Future<TicketModel?> validateTicket(String qrData) async {
-    final results = await db.query(
-      TicketsTable.tableName,
-      where: '${TicketsTable.qrData} = ?',
-      whereArgs: [qrData],
-    );
-    if (results.isEmpty) return null;
-    return TicketModel.fromMap(results.first);
-  }
-
-  Future<void> markTicketUsed(String ticketId) async {
-    await db.update(
-      TicketsTable.tableName,
-      {TicketsTable.status: 'used'},
-      where: '${TicketsTable.id} = ?',
-      whereArgs: [ticketId],
-    );
   }
 }

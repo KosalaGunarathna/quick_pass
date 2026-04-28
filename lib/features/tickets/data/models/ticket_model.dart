@@ -20,6 +20,9 @@ class TicketModel extends TicketEntity {
     required super.bookedAt,
     super.seatNumber,
     super.rawLabel,
+    super.userName,
+    super.userEmail,
+    super.userContact,
   });
 
   factory TicketModel.fromMap(Map<String, dynamic> m) => TicketModel(
@@ -32,6 +35,9 @@ class TicketModel extends TicketEntity {
     bookedAt: m[TicketsTable.bookedAt],
     seatNumber: m['seat_number'],
     rawLabel: m['seat_row_label'],
+    userName: m['user_name'],
+    userEmail: m['user_email'],
+    userContact: m['user_contact'],
   );
 
   Map<String, dynamic> toMap() => {
