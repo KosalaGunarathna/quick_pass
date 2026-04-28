@@ -88,7 +88,7 @@ class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 40, 20, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -109,12 +109,12 @@ class _OrganizerEventsTabState extends State<OrganizerEventsTab> {
                               'Organizer Dashboard',
                               style: TextStyle(
                                 color: Colors.white70,
-                                fontSize: 13,
+                                fontSize: 15,
                               ),
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              name,
+                              'Hi, $name',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,

@@ -21,6 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String role,
+    String? contactNumber,
   }) async {
     return localDatasource.register(
       name: name,
@@ -36,12 +37,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String email,
     String? password,
+    String? contactNumber,
   }) {
     return localDatasource.updateProfile(
       userId: userId,
       name: name,
       email: email,
       password: password,
+      contactNumber: contactNumber,
     );
   }
 

@@ -39,6 +39,7 @@ class AuthLocalDatasource {
     required String email,
     required String password,
     required String role,
+    String? contactNumber,
   }) async {
     try {
       final existing = await db.query(
@@ -55,6 +56,7 @@ class AuthLocalDatasource {
         email: email,
         password: password,
         role: role,
+        contactNumber: contactNumber,
         createdAt: DateTime.now().toIso8601String(),
       );
       await db.insert('users', user.toMap());
@@ -67,6 +69,7 @@ class AuthLocalDatasource {
 
   Future<void> logout() async {
     await prefs.remove(AppConstants.userKey);
+    // Also ensure database is cleaned up if needed
   }
 
   Future<UserModel> updateProfile({
@@ -74,6 +77,7 @@ class AuthLocalDatasource {
     required String name,
     required String email,
     String? password,
+    String? contactNumber,
   }) async {
     try {
       final existingRows = await db.query(
@@ -106,15 +110,18 @@ class AuthLocalDatasource {
             ? password
             : existing.password,
         role: existing.role,
+        contactNumber: contactNumber ?? existing.contactNumber,
         createdAt: existing.createdAt,
       );
 
+      // Update database first
       await db.update(
         UsersTable.tableName,
         updated.toMap(),
         where: '${UsersTable.id} = ?',
         whereArgs: [userId],
       );
+      // Then update SharedPreferences
       await prefs.setString(AppConstants.userKey, jsonEncode(updated.toMap()));
       return updated;
     } catch (e) {

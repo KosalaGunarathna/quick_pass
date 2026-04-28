@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../tickets/domain/entities/ticket_entity.dart';
-import '../../../tickets/presentation/bloc/ticket_bloc.dart';
 import '../../../events/domain/entities/event_entity.dart';
 import '../../../events/presentation/bloc/event_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -199,9 +198,14 @@ class QrResultPage extends StatelessWidget {
       builder: (context, state) {
         String attendeeName = 'Attendee';
         String attendeeEmail = 'N/A';
+        String attendeeContactNumber = 'N/A';
         if (state is AuthAuthenticated) {
           attendeeName = state.user.name;
           attendeeEmail = state.user.email;
+          attendeeContactNumber =
+              state.user.contactNumber?.toString().isNotEmpty == true
+              ? state.user.contactNumber.toString()
+              : 'N/A';
         }
 
         return Card(
@@ -261,6 +265,23 @@ class QrResultPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Contact Number',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    Text(
+                      attendeeContactNumber,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -273,8 +294,13 @@ class QrResultPage extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         String userEmail = 'N/A';
+        String userContactNumber = 'N/A';
         if (authState is AuthAuthenticated) {
           userEmail = authState.user.email;
+          userContactNumber =
+              authState.user.contactNumber?.toString().isNotEmpty == true
+              ? authState.user.contactNumber.toString()
+              : 'N/A';
         }
 
         // Build seat display from seat_number and raw_label
@@ -293,6 +319,8 @@ class QrResultPage extends StatelessWidget {
                 _buildInfoRow('Seat', seatDisplay),
                 const SizedBox(height: 12),
                 _buildInfoRow('Email', userEmail),
+                const SizedBox(height: 12),
+                _buildInfoRow('Contact Number', userContactNumber),
                 const SizedBox(height: 12),
                 _buildInfoRow('Status', ticket.status.toUpperCase()),
                 const SizedBox(height: 12),

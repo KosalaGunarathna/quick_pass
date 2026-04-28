@@ -49,6 +49,17 @@ class DatabaseHelper {
         print('Migration warning: $e');
       }
     }
+    // Migration from version 3 to 4: Add contact_number to users table
+    if (oldVersion < 4) {
+      try {
+        await db.execute(
+          'ALTER TABLE ${UsersTable.tableName} ADD COLUMN ${UsersTable.contactNumber} TEXT',
+        );
+      } catch (e) {
+        // Column might already exist
+        print('Migration warning: $e');
+      }
+    }
   }
 
   // Generic helpers

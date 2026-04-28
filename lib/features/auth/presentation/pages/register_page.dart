@@ -17,6 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _registerKey = GlobalKey<FormState>();
   final _fullNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _contactNumberCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _obscure = true;
   bool _acceptTerms = false;
@@ -32,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void dispose() {
     _fullNameCtrl.dispose();
     _emailCtrl.dispose();
+    _contactNumberCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
   }
@@ -51,6 +53,9 @@ class _RegisterPageState extends State<RegisterPage> {
         AuthRegisterRequested(
           name: _fullNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
+          contactNumber: _contactNumberCtrl.text.trim().isEmpty
+              ? null
+              : _contactNumberCtrl.text.trim(),
           password: _passCtrl.text.trim(),
           role: _accountType,
         ),
@@ -176,6 +181,16 @@ class _RegisterPageState extends State<RegisterPage> {
                             value == null || !value.contains('@')
                             ? 'Enter a valid email address'
                             : null,
+                      ),
+                      const SizedBox(height: 12),
+                      const _FieldLabel('Contact number'),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _contactNumberCtrl,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          hintText: '+1 555 123 4567',
+                        ),
                       ),
                       const SizedBox(height: 12),
                       const _FieldLabel('Password'),

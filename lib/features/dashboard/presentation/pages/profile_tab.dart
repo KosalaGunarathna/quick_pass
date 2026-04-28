@@ -13,6 +13,7 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   bool _updateSubmitted = false;
+  bool _isUpdating = false;
 
   Future<void> _showUpdateProfileDialog() async {
     final auth = context.read<AuthBloc>().state;
@@ -20,6 +21,9 @@ class _ProfileTabState extends State<ProfileTab> {
 
     final nameCtrl = TextEditingController(text: auth.user.name);
     final emailCtrl = TextEditingController(text: auth.user.email);
+    final contactNumberCtrl = TextEditingController(
+      text: auth.user.contactNumber?.toString() ?? '',
+    );
     final passwordCtrl = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
@@ -52,6 +56,12 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: contactNumberCtrl,
+                decoration: const InputDecoration(labelText: 'Contact Number'),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
                 controller: passwordCtrl,
                 decoration: const InputDecoration(
                   labelText: 'New Password (optional)',
@@ -81,6 +91,7 @@ class _ProfileTabState extends State<ProfileTab> {
 
     setState(() {
       _updateSubmitted = true;
+      _isUpdating = true;
     });
     context.read<AuthBloc>().add(
       AuthProfileUpdateRequested(
@@ -90,6 +101,9 @@ class _ProfileTabState extends State<ProfileTab> {
         password: passwordCtrl.text.trim().isEmpty
             ? null
             : passwordCtrl.text.trim(),
+        contactNumber: contactNumberCtrl.text.trim().isEmpty
+            ? null
+            : contactNumberCtrl.text.trim(),
       ),
     );
   }
@@ -100,6 +114,7 @@ class _ProfileTabState extends State<ProfileTab> {
       listener: (context, state) {
         if (_updateSubmitted && state is AuthAuthenticated) {
           _updateSubmitted = false;
+          _isUpdating = false;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Profile updated successfully'),
@@ -109,6 +124,7 @@ class _ProfileTabState extends State<ProfileTab> {
         }
         if (_updateSubmitted && state is AuthError) {
           _updateSubmitted = false;
+          _isUpdating = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
@@ -159,6 +175,13 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
                 const SizedBox(height: 4),
                 Text(user.email, style: const TextStyle(color: Colors.grey)),
+                const SizedBox(height: 4),
+                Text(
+                  user.contactNumber?.toString().isNotEmpty == true
+                      ? user.contactNumber.toString()
+                      : 'No contact number added',
+                  style: const TextStyle(color: Colors.grey),
+                ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -195,10 +218,12 @@ class _ProfileTabState extends State<ProfileTab> {
                     'Logout',
                     style: TextStyle(color: Colors.red),
                   ),
-                  onTap: () {
-                    context.read<AuthBloc>().add(AuthLogoutRequested());
-                    context.go('/login');
-                  },
+                  enabled: !_isUpdating,
+                  onTap: _isUpdating
+                      ? null
+                      : () {
+                          context.read<AuthBloc>().add(AuthLogoutRequested());
+                        },
                 ),
               ],
             ),

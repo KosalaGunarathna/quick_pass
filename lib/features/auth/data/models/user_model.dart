@@ -7,26 +7,29 @@ class UserModel extends UserEntity {
     required super.id,
     required super.name,
     required super.email,
+    super.contactNumber,
     required super.role,
     required super.createdAt,
     required this.password,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) => UserModel(
-        id: map['id'],
-        name: map['name'],
-        email: map['email'],
-        password: map['password'],
-        role: map['role'],
-        createdAt: map['created_at'],
-      );
+    id: map['id'],
+    name: map['name'],
+    email: map['email'],
+    password: map['password'],
+    contactNumber: map['contact_number']?.toString(),
+    role: map['role'],
+    createdAt: map['created_at'],
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'password': password,
-        'role': role,
-        'created_at': createdAt,
-      };
+    'id': id,
+    'name': name,
+    'email': email,
+    'password': password,
+    'role': role,
+    'created_at': createdAt,
+    'contact_number': contactNumber,
+  };
 }
