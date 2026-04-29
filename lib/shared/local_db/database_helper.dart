@@ -5,6 +5,7 @@ import 'tables/events_table.dart';
 import 'tables/seats_table.dart';
 import 'tables/tickets_table.dart';
 import 'tables/users_table.dart';
+import 'tables/reminders_table.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._internal();
@@ -32,6 +33,7 @@ class DatabaseHelper {
     await db.execute(EventsTable.createSql);
     await db.execute(SeatsTable.createSql);
     await db.execute(TicketsTable.createSql);
+    await db.execute(RemindersTable.createSql);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -57,6 +59,15 @@ class DatabaseHelper {
         );
       } catch (e) {
         // Column might already exist
+        print('Migration warning: $e');
+      }
+    }
+    // Migration from version 4 to 5: Create event reminders table
+    if (oldVersion < 5) {
+      try {
+        await db.execute(RemindersTable.createSql);
+      } catch (e) {
+        // Table might already exist
         print('Migration warning: $e');
       }
     }
