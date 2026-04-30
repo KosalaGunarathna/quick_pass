@@ -9,6 +9,11 @@ class TicketEntity extends Equatable {
   final String qrData;
   final String status; // 'active', 'used', 'cancelled'
   final String bookedAt;
+  final String? seatNumber;
+  final String? rawLabel;
+  final String? userName; // Ticket owner's name
+  final String? userEmail; // Ticket owner's email
+  final String? userContact; // Ticket owner's contact number
 
   const TicketEntity({
     required this.id,
@@ -18,6 +23,11 @@ class TicketEntity extends Equatable {
     required this.qrData,
     required this.status,
     required this.bookedAt,
+    this.seatNumber,
+    this.rawLabel,
+    this.userName,
+    this.userEmail,
+    this.userContact,
   });
 
   bool get isActive => status == 'active';

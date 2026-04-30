@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/event_entity.dart';
 import '../bloc/event_bloc.dart';
+import '../pages/location_picker_page.dart';
 
 class CreateEventPage extends StatefulWidget {
   final EventEntity? existingEvent;
@@ -27,8 +28,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
   final _priceCtrl = TextEditingController(text: '0');
   final _seatsCtrl = TextEditingController(text: '50');
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 7));
+  double? _latitude;
+  double? _longitude;
 
   bool get _isEditMode => widget.existingEvent != null;
+  bool get _hasLocationSelected => _latitude != null && _longitude != null;
 
   @override
   void initState() {
@@ -41,6 +45,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
       _priceCtrl.text = existing.ticketPrice.toString();
       _seatsCtrl.text = existing.totalSeats.toString();
       _selectedDate = existing.eventDate;
+      _latitude = existing.latitude;
+      _longitude = existing.longitude;
+     
     }
   }
 
@@ -80,6 +87,27 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
   }
 
+  Future<void> _pickLocation() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          initialLatitude: _latitude,
+          initialLongitude: _longitude,
+          initialLocationName: _venueCtrl.text,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _latitude = result['latitude'];
+        _longitude = result['longitude'];
+        _venueCtrl.text = result['locationName'];
+      });
+    }
+  }
+
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     final authState = context.read<AuthBloc>().state;
@@ -94,6 +122,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
       category: existing?.category ?? 'general',
       eventDate: _selectedDate,
       location: _venueCtrl.text.trim(),
+      latitude: _latitude,
+      longitude: _longitude,
       organizerId: authState.user.id,
       totalSeats: seats,
       availableSeats: existing?.availableSeats ?? seats,
@@ -113,7 +143,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditMode ? 'Edit Event' : 'Create Event'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<EventBloc, EventState>(
@@ -172,6 +202,43 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     Icons.location_on,
                     validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _pickLocation,
+                    icon: const Icon(Icons.map),
+                    label: Text(
+                      _hasLocationSelected
+                          ? 'Change Location'
+                          : 'Select Location on Map',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: BorderSide(
+                        color: _hasLocationSelected
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  if (_hasLocationSelected)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green[300]!),
+                        ),
+                        child: Text(
+                          'Location selected ✓ (${_latitude?.toStringAsFixed(4)}, ${_longitude?.toStringAsFixed(4)})',
+                          style: TextStyle(
+                            color: Colors.green[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -225,7 +292,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         style: const TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: const Color(0xFF1F5FA6),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(

@@ -7,7 +7,7 @@ import '../../../events/presentation/pages/event_list_page.dart';
 import '../../../notifications/presentation/pages/notifications_page.dart';
 import '../../../tickets/presentation/bloc/ticket_bloc.dart';
 import '../../../tickets/presentation/pages/my_tickets_page.dart';
-import 'organizer_dashboard_page.dart';
+import 'profile_tab.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});

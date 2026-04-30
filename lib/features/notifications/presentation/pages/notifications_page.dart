@@ -38,7 +38,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: FutureBuilder<List<NotificationEntity>>(
@@ -85,7 +85,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   child: ListTile(
                     leading: const Icon(
                       Icons.notifications_active,
-                      color: Colors.deepPurple,
+                      color: Color(0xFF1F5FA6),
                     ),
                     title: Text(item.title),
                     subtitle: Text('${item.body}\n$formatted'),

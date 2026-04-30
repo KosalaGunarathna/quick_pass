@@ -16,6 +16,7 @@ class BookingPage extends StatefulWidget {
 class _BookingPageState extends State<BookingPage> {
   String? _selectedSeatId;
   String? _selectedSeatLabel;
+  List<SeatEntity> _cachedSeats = [];
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _BookingPageState extends State<BookingPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Seat'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color(0xFF1F5FA6),
         foregroundColor: Colors.white,
       ),
       body: BlocConsumer<TicketBloc, TicketState>(
@@ -70,7 +71,7 @@ class _BookingPageState extends State<BookingPage> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade700,
+                  color: Color(0xFF1F5FA6),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Center(
@@ -92,7 +93,7 @@ class _BookingPageState extends State<BookingPage> {
                   children: [
                     _legendDot(Colors.green.shade100, 'Available'),
                     const SizedBox(width: 16),
-                    _legendDot(Colors.deepPurple, 'Selected'),
+                    _legendDot(Color(0xFF1F5FA6), 'Selected'),
                     const SizedBox(width: 16),
                     _legendDot(Colors.grey.shade300, 'Booked'),
                   ],
@@ -101,91 +102,115 @@ class _BookingPageState extends State<BookingPage> {
               const SizedBox(height: 12),
               // Seat grid
               Expanded(
-                child: BlocBuilder<EventBloc, EventState>(
+                child: BlocConsumer<EventBloc, EventState>(
+                  listener: (context, state) {
+                    if (state is SeatsLoaded) {
+                      _cachedSeats = state.seats;
+                    }
+                  },
                   builder: (context, state) {
-                    if (state is EventLoading) {
+                    if (state is EventLoading && _cachedSeats.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    if (state is SeatsLoaded) {
-                      final grouped = <String, List<SeatEntity>>{};
-                      for (final s in state.seats) {
-                        grouped.putIfAbsent(s.rowLabel, () => []).add(s);
-                      }
-                      return ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        children: grouped.entries.map((entry) {
-                          return Row(
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                child: Text(
-                                  entry.key,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
+                    if (state is EventError && _cachedSeats.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(state.message),
+                            const SizedBox(height: 12),
+                            ElevatedButton(
+                              onPressed: () => context.read<EventBloc>().add(
+                                SeatsLoad(widget.eventId),
+                              ),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final seats = state is SeatsLoaded
+                        ? state.seats
+                        : _cachedSeats;
+                    if (seats.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final grouped = <String, List<SeatEntity>>{};
+                    for (final s in seats) {
+                      grouped.putIfAbsent(s.rowLabel, () => []).add(s);
+                    }
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: grouped.entries.map((entry) {
+                        return Row(
+                          children: [
+                            SizedBox(
+                              width: 24,
+                              child: Text(
+                                entry.key,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: entry.value.map((seat) {
-                                    final isSelected =
-                                        _selectedSeatId == seat.id;
-                                    final isBooked = !seat.isAvailable;
-                                    return GestureDetector(
-                                      onTap: isBooked
-                                          ? null
-                                          : () => setState(() {
-                                              _selectedSeatId = seat.id;
-                                              _selectedSeatLabel =
-                                                  '${seat.rowLabel}${seat.seatNumber}';
-                                            }),
-                                      child: Container(
-                                        width: 36,
-                                        height: 32,
-                                        decoration: BoxDecoration(
-                                          color: isBooked
-                                              ? Colors.grey.shade300
-                                              : isSelected
-                                              ? Colors.deepPurple
-                                              : Colors.green.shade100,
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                          border: Border.all(
-                                            color: isSelected
-                                                ? Colors.deepPurple
-                                                : Colors.grey.shade300,
-                                          ),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: entry.value.map((seat) {
+                                  final isSelected = _selectedSeatId == seat.id;
+                                  final isBooked = !seat.isAvailable;
+                                  return GestureDetector(
+                                    onTap: isBooked
+                                        ? null
+                                        : () => setState(() {
+                                            _selectedSeatId = seat.id;
+                                            _selectedSeatLabel =
+                                                '${seat.rowLabel}${seat.seatNumber}';
+                                          }),
+                                    child: Container(
+                                      width: 36,
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                        color: isBooked
+                                            ? Colors.grey.shade300
+                                            : isSelected
+                                            ? Color(0xFF1F5FA6)
+                                            : Colors.green.shade100,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Color(0xFF1F5FA6)
+                                              : Colors.grey.shade300,
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            '${seat.seatNumber}',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500,
-                                              color: isBooked
-                                                  ? Colors.grey
-                                                  : isSelected
-                                                  ? Colors.white
-                                                  : Colors.green.shade800,
-                                            ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '${seat.seatNumber}',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                            color: isBooked
+                                                ? Colors.grey
+                                                : isSelected
+                                                ? Colors.white
+                                                : Colors.green.shade800,
                                           ),
                                         ),
                                       ),
-                                    );
-                                  }).toList(),
-                                ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-                            ],
-                          );
-                        }).toList(),
-                      );
-                    }
-                    return const Center(child: Text('No seats available'));
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    );
                   },
                 ),
               ),
@@ -211,7 +236,7 @@ class _BookingPageState extends State<BookingPage> {
                             : 'No seat selected',
                         style: TextStyle(
                           color: _selectedSeatLabel != null
-                              ? Colors.deepPurple
+                              ? Color(0xFF1F5FA6)
                               : Colors.grey,
                         ),
                       ),
@@ -224,7 +249,7 @@ class _BookingPageState extends State<BookingPage> {
                             ? _confirmBooking
                             : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
+                          backgroundColor: Color(0xFF1F5FA6),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

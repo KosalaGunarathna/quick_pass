@@ -5,6 +5,7 @@ import 'tables/events_table.dart';
 import 'tables/seats_table.dart';
 import 'tables/tickets_table.dart';
 import 'tables/users_table.dart';
+import 'tables/reminders_table.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._internal();
@@ -32,14 +33,44 @@ class DatabaseHelper {
     await db.execute(EventsTable.createSql);
     await db.execute(SeatsTable.createSql);
     await db.execute(TicketsTable.createSql);
+    await db.execute(RemindersTable.createSql);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    await db.execute('DROP TABLE IF EXISTS ${TicketsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${SeatsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${EventsTable.tableName}');
-    await db.execute('DROP TABLE IF EXISTS ${UsersTable.tableName}');
-    await _onCreate(db, newVersion);
+    // Migration from version 2 to 3: Add location coordinates
+    if (oldVersion < 3) {
+      try {
+        await db.execute(
+          'ALTER TABLE ${EventsTable.tableName} ADD COLUMN ${EventsTable.latitude} REAL',
+        );
+        await db.execute(
+          'ALTER TABLE ${EventsTable.tableName} ADD COLUMN ${EventsTable.longitude} REAL',
+        );
+      } catch (e) {
+        // Columns might already exist
+        print('Migration warning: $e');
+      }
+    }
+    // Migration from version 3 to 4: Add contact_number to users table
+    if (oldVersion < 4) {
+      try {
+        await db.execute(
+          'ALTER TABLE ${UsersTable.tableName} ADD COLUMN ${UsersTable.contactNumber} TEXT',
+        );
+      } catch (e) {
+        // Column might already exist
+        print('Migration warning: $e');
+      }
+    }
+    // Migration from version 4 to 5: Create event reminders table
+    if (oldVersion < 5) {
+      try {
+        await db.execute(RemindersTable.createSql);
+      } catch (e) {
+        // Table might already exist
+        print('Migration warning: $e');
+      }
+    }
   }
 
   // Generic helpers

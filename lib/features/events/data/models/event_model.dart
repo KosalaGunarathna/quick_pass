@@ -8,6 +8,8 @@ class EventModel extends EventEntity {
     required String category,
     required DateTime eventDate,
     required String location,
+    double? latitude,
+    double? longitude,
     String? imageUrl,
     required int totalSeats,
     required int availableSeats,
@@ -22,6 +24,8 @@ class EventModel extends EventEntity {
          category: category,
          eventDate: eventDate,
          location: location,
+         latitude: latitude,
+         longitude: longitude,
          imageUrl: imageUrl,
          totalSeats: totalSeats,
          availableSeats: availableSeats,
@@ -39,6 +43,8 @@ class EventModel extends EventEntity {
       category: entity.category,
       eventDate: entity.eventDate,
       location: entity.location,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
       imageUrl: entity.imageUrl,
       totalSeats: entity.totalSeats,
       availableSeats: entity.availableSeats,
@@ -59,6 +65,12 @@ class EventModel extends EventEntity {
           ? DateTime.parse(map['event_date'])
           : DateTime.now(),
       location: map['location'] ?? '',
+      latitude: map['latitude'] != null
+          ? (map['latitude'] as num).toDouble()
+          : null,
+      longitude: map['longitude'] != null
+          ? (map['longitude'] as num).toDouble()
+          : null,
       imageUrl: map['image_url'],
       totalSeats: map['total_seats'] ?? 0,
       availableSeats: map['available_seats'] ?? 0,
@@ -79,6 +91,8 @@ class EventModel extends EventEntity {
       'category': category,
       'event_date': eventDate.toIso8601String(),
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
       'image_url': imageUrl,
       'total_seats': totalSeats,
       'available_seats': availableSeats,
