@@ -5,8 +5,8 @@ class MapTilerConfig {
       'https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=$apiKey';
   static const String searchUrl = 'https://api.maptiler.com/geocoding';
 
-  // Default map center (can be updated to your region)
-  static const double defaultLatitude = 40.7128; // New York
-  static const double defaultLongitude = -74.0060;
+  // Default map center - Colombo, Sri Lanka
+  static const double defaultLatitude = 6.9271;
+  static const double defaultLongitude = 80.6337;
   static const double defaultZoom = 13.0;
 }

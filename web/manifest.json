@@ -1,11 +1,11 @@
 {
-    "name": "quick_pass",
-    "short_name": "quick_pass",
+    "name": "Quick Pass",
+    "short_name": "Quick Pass",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Quick Pass",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

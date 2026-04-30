@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import '../../../../core/constants/maptiler_config.dart';
 
 class LocationPickerPage extends StatefulWidget {
@@ -30,6 +32,10 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
   List<SearchResult> _searchResults = [];
   bool _isSearching = false;
   bool _showSearchResults = false;
+
+  // Debounce timer for search
+  Timer? _debounceTimer;
+  final int _searchDebounceMs = 600;
 
   @override
   void initState() {
@@ -59,7 +65,26 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
     });
   }
 
-  Future<void> _searchLocation(String query) async {
+  void _onSearchChanged(String query) {
+    // Clear previous search results when user starts typing
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _showSearchResults = false;
+      });
+      return;
+    }
+
+    // Debounce search requests using a Timer that can be cancelled
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(Duration(milliseconds: _searchDebounceMs), () {
+      if (mounted) {
+        _performSearch(query);
+      }
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
     final trimmedQuery = query.trim();
 
     if (trimmedQuery.isEmpty) {
@@ -78,7 +103,17 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
         '/geocoding/${Uri.encodeComponent(trimmedQuery)}.json',
         {'key': MapTilerConfig.apiKey, 'limit': '8'},
       );
-      final response = await http.get(url);
+
+      final response = await http
+          .get(url)
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception(
+                'Connection timeout. Please check your internet connection.',
+              );
+            },
+          );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -100,19 +135,38 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
               }).toList()
             : <SearchResult>[];
 
-        setState(() {
-          _searchResults = results;
-          _showSearchResults = true;
-        });
+        if (results.isEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No locations found. Try another search.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        }
+
+        if (mounted) {
+          setState(() {
+            _searchResults = results;
+            _showSearchResults = results.isNotEmpty;
+          });
+        }
       } else {
-        throw Exception('HTTP ${response.statusCode}');
+        throw Exception(
+          'Failed to search locations. Server error: ${response.statusCode}',
+        );
       }
+    } on SocketException catch (_) {
+      // Silently fail - user can still select location by tapping on map
+      // No snackbar shown to avoid distracting the user
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Search error: $e')));
+      // Silently fail on search errors, don't spam user with messages
+      // User can still select location manually
     } finally {
-      setState(() => _isSearching = false);
+      if (mounted) {
+        setState(() => _isSearching = false);
+      }
     }
   }
 
@@ -143,10 +197,6 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
     });
   }
 
-  void _centerMap() {
-    _mapController.move(_selectedLocation, _zoomLevel);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,10 +211,9 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
               children: [
                 TextField(
                   controller: _searchCtrl,
-                  onChanged: _searchLocation,
+                  onChanged: _onSearchChanged,
                   decoration: InputDecoration(
-                    hintText:
-                        'Search location (e.g., Central Park, Times Square)',
+                    hintText: 'Search location (or enter name below)',
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _isSearching
                         ? const Padding(
@@ -287,7 +336,9 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                 TextField(
                   controller: _locationNameCtrl,
                   decoration: InputDecoration(
-                    hintText: 'Enter location name (e.g., Central Park)',
+                    hintText: 'Enter location name (required)',
+                    helperText:
+                        'Tap on map to select location, or type name here',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -324,24 +375,27 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 12),
+                // Info Text
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    '💡 Tip: Tap on the map to select a location, enter a name, then save.',
+                    style: TextStyle(fontSize: 12, color: Colors.black87),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                // Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _centerMap,
-                        child: const Text('Center Map'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _submit,
-                        child: const Text('Save Location'),
-                      ),
-                    ),
-                  ],
+                // Save Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    child: const Text('Save Location'),
+                  ),
                 ),
               ],
             ),

@@ -60,7 +60,7 @@ class _SmartEventAppState extends State<SmartEventApp> {
         BlocProvider(create: (_) => sl<TicketBloc>()),
       ],
       child: MaterialApp.router(
-        title: 'EventHub',
+        title: 'Quick Pass',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         routerConfig: _router,
