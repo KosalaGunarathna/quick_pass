@@ -17,7 +17,10 @@ import '../../features/qr_scanner/presentation/pages/qr_scanner_page.dart';
 import '../../features/qr_scanner/presentation/pages/qr_result_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 
+
+
 GoRouter buildRouter(AuthBloc authBloc) {
+  
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
@@ -43,6 +46,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
           return RegisterPage(initialRole: role);
         },
       ),
+      // User and Organizer Home Pages
       GoRoute(path: '/home', builder: (_, __) => const UserHomePage()),
       GoRoute(
         path: '/organizer',
