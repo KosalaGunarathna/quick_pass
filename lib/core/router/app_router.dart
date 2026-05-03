@@ -81,6 +81,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
           return CreateEventPage.edit(existingEvent: event);
         },
       ),
+      // Organizer Event View Page with event and organizerId passed as extra
       GoRoute(
         path: '/organizer/event-view',
         builder: (_, state) {
