@@ -57,6 +57,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
         builder: (_, state) =>
             EventDetailPage(eventId: state.pathParameters['id']!),
       ),
+      // My Tickets Page
       GoRoute(
         path: '/book/:eventId',
         builder: (_, state) =>
