@@ -57,12 +57,13 @@ GoRouter buildRouter(AuthBloc authBloc) {
         builder: (_, state) =>
             EventDetailPage(eventId: state.pathParameters['id']!),
       ),
-      // My Tickets Page
+      // My Tickets Page  
       GoRoute(
         path: '/book/:eventId',
         builder: (_, state) =>
             BookingPage(eventId: state.pathParameters['eventId']!),
       ),
+      
       GoRoute(
         path: '/ticket/:id',
         builder: (_, state) =>
@@ -72,6 +73,7 @@ GoRouter buildRouter(AuthBloc authBloc) {
         path: '/create-event',
         builder: (_, __) => const CreateEventPage(),
       ),
+      // Edit Event Page with event data passed as extra
       GoRoute(
         path: '/edit-event',
         builder: (_, state) {
